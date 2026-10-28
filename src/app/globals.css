@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: #f6faf6;
+    --foreground: #0f172a;
+    --card: #ffffff;
+    --card-foreground: #0f172a;
+    --primary: #16a34a;
+    --primary-foreground: #ffffff;
+    --secondary: #f1f5f9;
+    --secondary-foreground: #0f172a;
+    --muted: #f8fafc;
+    --muted-foreground: #64748b;
+    --accent: #f2fcf5;
+    --accent-foreground: #15803d;
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    --border: #e2e8f0;
+    --input: #e2e8f0;
+    --ring: #16a34a;
+    --radius: 1rem;
+  }
+}
+
+body {
+  background-color: #f6faf6;
+  color: #0f172a;
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+
+.font-serif-title {
+  font-family: var(--font-merriweather), Georgia, serif;
+}
+
+/* Winding S-curve and dashed node connector */
+.node-connector {
+  background-image: linear-gradient(to bottom, #cbd5e1 55%, rgba(255, 255, 255, 0) 0%);
+  background-position: center;
+  background-size: 3px 14px;
+  background-repeat: repeat-y;
+}
+
+/* 3D Tactile Buttons */
+.btn-3d-green {
+  box-shadow: 0 4px 0 #15803d;
+  transition: all 0.12s ease;
+}
+.btn-3d-green:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #15803d;
+}
+
+.btn-3d-orange {
+  box-shadow: 0 4px 0 #c2410c;
+  transition: all 0.12s ease;
+}
+.btn-3d-orange:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #c2410c;
+}
+
+.node-btn-shadow {
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.18);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.node-btn-shadow:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

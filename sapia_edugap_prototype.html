@@ -1,0 +1,2001 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sapia AI - EduGap | Nền tảng Học tập AI Thích ứng & Socratic</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Merriweather:wght@700;900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Merriweather', 'serif'],
+          },
+          colors: {
+            sapia: {
+              50: '#f2fcf5',
+              100: '#e1f8e8',
+              200: '#c3efd2',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f6faf6;
+      color: #0f172a;
+    }
+    .font-serif-title {
+      font-family: 'Merriweather', serif;
+    }
+    .node-connector {
+      background-image: linear-gradient(to bottom, #cbd5e1 55%, rgba(255,255,255,0) 0%);
+      background-position: center;
+      background-size: 3px 14px;
+      background-repeat: repeat-y;
+    }
+    .btn-3d-green {
+      box-shadow: 0 4px 0 #15803d;
+      transition: all 0.12s ease;
+    }
+    .btn-3d-green:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #15803d;
+    }
+    .btn-3d-orange {
+      box-shadow: 0 4px 0 #c2410c;
+      transition: all 0.12s ease;
+    }
+    .btn-3d-orange:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #c2410c;
+    }
+    .node-btn-shadow {
+      box-shadow: 0 6px 0 rgba(0, 0, 0, 0.18);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .node-btn-shadow:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col lg:flex-row overflow-x-hidden selection:bg-green-200 selection:text-green-900">
+
+  <!-- Toast Notification -->
+  <div id="toastContainer" class="fixed top-4 right-4 z-[90] flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Mobile Top Header -->
+  <header class="lg:hidden sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <div class="w-9 h-9 rounded-full bg-green-600 flex items-center justify-center text-white shadow-sm">
+        <svg class="w-6 h-6" viewBox="0 0 64 64" fill="none">
+          <circle cx="32" cy="32" r="28" fill="#16a34a"/>
+          <path d="M18 24C18 17 24 14 32 14C40 14 46 17 46 24V42C46 47 40 50 32 50C24 50 18 47 18 42V24Z" fill="#ffffff"/>
+          <circle cx="25" cy="29" r="6" stroke="#0f172a" stroke-width="2.5" fill="#fef08a"/>
+          <circle cx="39" cy="29" r="6" stroke="#0f172a" stroke-width="2.5" fill="#fef08a"/>
+          <circle cx="25" cy="29" r="2.5" fill="#0f172a"/>
+          <circle cx="39" cy="29" r="2.5" fill="#0f172a"/>
+          <line x1="31" y1="29" x2="33" y2="29" stroke="#0f172a" stroke-width="2.5"/>
+          <polygon points="32,33 29,38 35,38" fill="#f97316"/>
+        </svg>
+      </div>
+      <div>
+        <div class="font-serif-title font-black text-base text-slate-900 leading-none">Sapia AI</div>
+        <div class="text-[10px] font-bold tracking-widest text-green-600 uppercase mt-0.5">VIBRANT LEARNING</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <div class="flex items-center gap-1 bg-orange-50 border border-orange-200 px-2.5 py-1 rounded-full text-xs font-bold text-orange-600">
+        <span>🔥</span> <span id="mobileStreakVal">0</span>
+      </div>
+      <div class="flex items-center gap-1 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full text-xs font-bold text-amber-700">
+        <span>🏆</span> <span id="mobileXpVal">0 XP</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- LEFT NAVIGATION SIDEBAR -->
+  <aside class="w-full lg:w-64 xl:w-72 bg-white border-b lg:border-b-0 lg:border-r border-slate-200 shrink-0 flex flex-col justify-between lg:sticky lg:top-0 lg:h-screen z-20">
+    <div class="p-4 lg:p-6">
+      <!-- Brand Logo (Desktop) -->
+      <div class="hidden lg:flex items-center gap-3 mb-8 cursor-pointer" id="brandLogoBtn">
+        <div class="w-11 h-11 rounded-2xl bg-green-600 flex items-center justify-center shadow-md shadow-green-600/20">
+          <svg class="w-8 h-8" viewBox="0 0 64 64" fill="none">
+            <circle cx="32" cy="32" r="28" fill="#16a34a"/>
+            <path d="M18 22L23 15L28 20H36L41 15L46 22V42C46 47.5 40 51 32 51C24 51 18 47.5 18 42V22Z" fill="#ffffff"/>
+            <circle cx="25" cy="29" r="6.5" stroke="#0f172a" stroke-width="2.5" fill="#fef08a"/>
+            <circle cx="39" cy="29" r="6.5" stroke="#0f172a" stroke-width="2.5" fill="#fef08a"/>
+            <circle cx="25" cy="29" r="2.5" fill="#0f172a"/>
+            <circle cx="39" cy="29" r="2.5" fill="#0f172a"/>
+            <line x1="31.5" y1="29" x2="32.5" y2="29" stroke="#0f172a" stroke-width="2.5"/>
+            <polygon points="32,33 28.5,38.5 35.5,38.5" fill="#f97316"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="font-serif-title font-black text-xl text-slate-900 tracking-tight leading-none">Sapia AI</h1>
+          <p class="text-[10px] font-extrabold tracking-[0.18em] text-green-600 uppercase mt-1">VIBRANT LEARNING</p>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="flex lg:flex-col gap-1.5 overflow-x-auto pb-1 lg:pb-0" aria-label="Main Navigation">
+        <button type="button" data-nav="learn" class="nav-item flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all whitespace-nowrap bg-green-50 text-green-700 border border-green-200 shadow-sm">
+          <span class="text-lg">📖</span>
+          <span>HỌC TẬP</span>
+        </button>
+        <button type="button" data-nav="tutor" class="nav-item flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm text-slate-600 hover:bg-slate-100 transition-all whitespace-nowrap border border-transparent">
+          <span class="text-lg">💬</span>
+          <span>TRỢ LÝ AI</span>
+        </button>
+        <button type="button" data-nav="leaderboard" class="nav-item flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm text-slate-600 hover:bg-slate-100 transition-all whitespace-nowrap border border-transparent">
+          <span class="text-lg">🏆</span>
+          <span>XẾP HẠNG</span>
+        </button>
+        <button type="button" data-nav="profile" class="nav-item flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm text-slate-600 hover:bg-slate-100 transition-all whitespace-nowrap border border-transparent">
+          <span class="text-lg">👤</span>
+          <span>CÁ NHÂN</span>
+        </button>
+      </nav>
+
+      <!-- Socratic AI Contextual Sub-Sidebar (Shown when TRỢ LÝ AI is active) -->
+      <div id="socraticSubSidebar" class="hidden mt-6 pt-5 border-t border-slate-200">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">TRỢ LÝ SOCRATIC</span>
+          <span class="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full">RAG v2</span>
+        </div>
+        <button type="button" id="newChatSessionBtn" class="w-full py-2.5 px-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition">
+          <span>+ CUỘC HỘI THOẠI MỚI</span>
+        </button>
+        <div class="mt-4">
+          <div class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">LỊCH SỬ HỎI ĐÁP</div>
+          <div id="chatHistoryList" class="space-y-1.5">
+            <button type="button" data-topic="Docker Compose" class="chat-topic-btn w-full text-left px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-900 flex items-center justify-between">
+              <span class="truncate">🐳 Docker Compose & Network</span>
+              <span class="text-[10px] text-green-600 font-bold">1100</span>
+            </button>
+            <button type="button" data-topic="Transformer Self-Attention" class="chat-topic-btn w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-50 flex items-center justify-between">
+              <span class="truncate">🧠 Transformer Self-Attention</span>
+              <span class="text-[10px] text-slate-400 font-bold">1120</span>
+            </button>
+            <button type="button" data-topic="ReAct Agent Pattern" class="chat-topic-btn w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-50 flex items-center justify-between">
+              <span class="truncate">🤖 ReAct Agent Loop</span>
+              <span class="text-[10px] text-slate-400 font-bold">1150</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Left Sidebar Footer -->
+    <div class="hidden lg:block p-5 border-t border-slate-100">
+      <div class="bg-slate-50 rounded-xl p-3 border border-slate-200/80 mb-3">
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-bold text-slate-700">Elo Thích ứng</span>
+          <span id="sidebarEloBadge" class="font-extrabold text-green-600">1200 ELO</span>
+        </div>
+        <div class="text-[11px] text-slate-500 mt-0.5">Cohort: AI20K Cohort 2 • EduGap</div>
+      </div>
+      <p class="text-xs font-semibold text-slate-400">Sapia AI © 2026</p>
+    </div>
+  </aside>
+
+  <!-- CENTER MAIN CONTENT AREA -->
+  <main class="flex-1 min-w-0 px-4 py-5 sm:px-6 lg:px-8 lg:py-7 max-w-4xl mx-auto w-full">
+
+    <!-- ========================================== -->
+    <!-- VIEW 1: HỌC TẬP (LEARNING PATH ROADMAP)    -->
+    <!-- ========================================== -->
+    <section id="view-learn" class="space-y-6">
+      <!-- Top Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-white px-5 py-3.5 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-center gap-2.5">
+          <span class="text-xl">✨</span>
+          <h2 class="font-extrabold text-base sm:text-lg tracking-tight text-slate-900 uppercase">LỘ TRÌNH HỌC TẬP</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" id="devModeToggleBtn" class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold tracking-wide border transition-all bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200">
+            DEV MODE: OFF
+          </button>
+        </div>
+      </div>
+
+      <!-- Week 1 Overview Card -->
+      <div class="bg-white rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+          <div class="space-y-1.5">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-green-100 text-green-800 text-[11px] font-extrabold uppercase tracking-wide">
+              <span>TUẦN HỌC HIỆN TẠI</span>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-serif-title font-black text-slate-900">Tuần 1: Nền Tảng AI &amp; LLM &amp; Prototyping</h3>
+            <p class="text-sm text-slate-600 leading-relaxed">
+              Nắm vững Transformer, xác định bài toán AI, Prompt Engineering, Agent ReAct, Prototype, và Vector Store.
+            </p>
+          </div>
+          <button type="button" id="collapseWeekBtn" class="self-start shrink-0 px-4 py-2 rounded-xl bg-green-600 hover:bg-green-700 text-white font-extrabold text-xs tracking-wide uppercase shadow-sm transition">
+            THU GỌN
+          </button>
+        </div>
+
+        <!-- Week Progress Bar -->
+        <div class="mt-4 pt-4 border-t border-slate-100">
+          <div class="flex items-center justify-between text-xs font-bold text-slate-600 mb-1.5">
+            <span>Tiến độ Tuần 1</span>
+            <span id="weekProgressLabel" class="text-green-600 font-extrabold">0%</span>
+          </div>
+          <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200/60">
+            <div id="weekProgressBar" class="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Mascot Welcome Bubble -->
+        <div class="mt-5 flex items-center gap-3.5 bg-green-50/80 border border-green-200/80 rounded-2xl p-3.5">
+          <div class="w-11 h-11 rounded-2xl bg-green-600 flex items-center justify-center shrink-0 shadow-sm">
+            <svg class="w-8 h-8" viewBox="0 0 64 64" fill="none">
+              <circle cx="32" cy="32" r="28" fill="#16a34a"/>
+              <path d="M18 22L23 15L28 20H36L41 15L46 22V42C46 47.5 40 51 32 51C24 51 18 47.5 18 42V22Z" fill="#ffffff"/>
+              <circle cx="25" cy="29" r="6" stroke="#0f172a" stroke-width="2.5" fill="#fef08a"/>
+              <circle cx="39" cy="29" r="6" stroke="#0f172a" stroke-width="2.5" fill="#fef08a"/>
+              <circle cx="25" cy="29" r="2.5" fill="#0f172a"/>
+              <circle cx="39" cy="29" r="2.5" fill="#0f172a"/>
+              <polygon points="32,33 28.5,38.5 35.5,38.5" fill="#f97316"/>
+            </svg>
+          </div>
+          <div class="text-xs sm:text-sm font-semibold text-slate-700">
+            <span class="font-extrabold text-green-700">Sofi (Cú Thông Thái):</span> "Chào mừng bạn đến với tuần đầu tiên! Hãy bấm vào từng Node tròn bên dưới để chọn bộ đề C.1–C.5 hoặc bật <span class="underline decoration-green-500">DEV MODE</span> để mở khóa toàn bộ lộ trình nhé."
+          </div>
+        </div>
+      </div>
+
+      <!-- Days Container -->
+      <div id="roadmapDaysContainer" class="space-y-8"></div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 1B: GUIDEBOOK VIEW                    -->
+    <!-- ========================================== -->
+    <section id="view-guidebook" class="hidden space-y-5">
+      <div>
+        <button type="button" id="backFromGuidebookBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-xs font-extrabold text-slate-700 shadow-sm transition">
+          <span>&lt; TRỞ VỀ LỘ TRÌNH</span>
+        </button>
+      </div>
+
+      <div id="guidebookHeaderCard" class="rounded-3xl p-6 text-white shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-emerald-600">
+        <div class="flex items-start gap-4">
+          <div class="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-3xl shrink-0">
+            📘
+          </div>
+          <div>
+            <span id="guidebookBadge" class="text-[11px] font-extrabold uppercase tracking-widest bg-black/20 px-2.5 py-1 rounded-full">HƯỚNG DẪN DAY 1</span>
+            <h2 id="guidebookTitle" class="text-2xl font-serif-title font-black mt-2">AI &amp; LLM Foundation</h2>
+            <p id="guidebookDesc" class="text-sm text-white/90 mt-1">Nắm vững Transformer, Tokenization, Embeddings và Inference Dynamics.</p>
+          </div>
+        </div>
+        <button type="button" id="guidebookStartQuizBtn" class="shrink-0 px-5 py-3 rounded-2xl bg-white text-slate-900 hover:bg-slate-100 font-extrabold text-xs uppercase tracking-wider shadow-sm transition">
+          Làm bộ đề ngay →
+        </button>
+      </div>
+
+      <!-- Notice Card matching original site + Interactive Key Takeaways -->
+      <div class="bg-white rounded-3xl border border-slate-200 p-6 text-center space-y-3 shadow-sm">
+        <div class="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 text-amber-500 flex items-center justify-center text-2xl mx-auto">
+          ✨
+        </div>
+        <h3 class="text-lg font-extrabold text-slate-900">Tài liệu học tập đang được soạn thảo</h3>
+        <p class="text-sm text-slate-600 max-w-xl mx-auto leading-relaxed">
+          Tài liệu tóm tắt kiến thức chuyên sâu cho ngày học này đang được đội ngũ Giảng viên AI20K chuẩn bị. Bạn có thể xem nhanh <strong>Thẻ Tóm Tắt Cốt Lõi</strong> bên dưới hoặc tiến hành làm các bộ đề trắc nghiệm để củng cố và kiểm tra tri thức ngay bây giờ!
+        </p>
+      </div>
+
+      <!-- Core Cheat-sheet cards for the selected day -->
+      <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <h4 class="font-extrabold text-sm uppercase tracking-wider text-slate-700">📌 Tóm tắt Kiến thức Trọng tâm (Preview)</h4>
+          <span class="text-xs font-semibold text-green-600">Đồng bộ RAG Slide</span>
+        </div>
+        <div id="guidebookKeyPoints" class="grid grid-cols-1 md:grid-cols-2 gap-3.5"></div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 2: TRỢ LÝ AI (SOCRATIC RAG & SANDBOX) -->
+    <!-- ========================================== -->
+    <section id="view-tutor" class="hidden space-y-4">
+      <!-- Top Sandbox Notice Banner -->
+      <div class="bg-amber-50 border border-amber-200/90 rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2 text-xs font-semibold text-amber-900">
+          <span>🧪</span>
+          <span>Chế độ Demo: Giao thức RAG &amp; Sandbox thích ứng hoạt động tại Client</span>
+        </div>
+        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-amber-200/80 text-amber-900">
+          SANDBOX MODE
+        </span>
+      </div>
+
+      <!-- Main Socratic Chat Card -->
+      <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-[680px]">
+        <!-- Chat Topic Header -->
+        <div class="p-4 sm:px-6 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 bg-slate-50/60">
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 id="socraticTopicTitle" class="font-serif-title font-black text-lg text-slate-900">Docker Compose</h2>
+              <span class="px-2 py-0.5 rounded-md bg-green-100 text-green-800 text-[10px] font-extrabold uppercase">Grounded</span>
+            </div>
+            <p id="socraticEloSubtitle" class="text-[11px] font-extrabold tracking-wider text-slate-500 uppercase mt-0.5">
+              HỌC CHẾ THÍCH ỨNG: DEEP STYLE (ELO: 1100)
+            </p>
+          </div>
+
+          <!-- Action Mode Pills -->
+          <div id="socraticModePills" class="flex flex-wrap gap-1.5">
+            <button type="button" data-mode="Giải thích" class="socratic-mode-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-green-600 text-white shadow-sm transition">Giải thích</button>
+            <button type="button" data-mode="Gợi ý từng bước" class="socratic-mode-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition">Gợi ý từng bước</button>
+            <button type="button" data-mode="Sửa lỗi code" class="socratic-mode-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition">Sửa lỗi code</button>
+            <button type="button" data-mode="Luyện tập" class="socratic-mode-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition">Luyện tập</button>
+            <button type="button" data-mode="Review bài làm" class="socratic-mode-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition">Review bài làm</button>
+          </div>
+        </div>
+
+        <!-- Messages Stream -->
+        <div id="socraticChatStream" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-slate-50/30"></div>
+
+        <!-- Quick Demo Preset Buttons -->
+        <div class="px-4 py-2.5 bg-slate-50 border-t border-slate-200/80">
+          <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1.5">Kịch bản Demo Nhanh (Click để kiểm thử giao thức):</div>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" data-preset="guardrail" class="socratic-preset-btn px-2.5 py-1 rounded-lg text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 transition">
+              🚨 Kích hoạt Guardrail (Chống gian lận)
+            </button>
+            <button type="button" data-preset="fallback" class="socratic-preset-btn px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 transition">
+              ⚠️ Kích hoạt Fallback (Độ tin cậy thấp)
+            </button>
+            <button type="button" data-preset="rag_slide" class="socratic-preset-btn px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition">
+              🦊 [Demo] RAG Slide: Docker Compose
+            </button>
+            <button type="button" data-preset="sandbox_py" class="socratic-preset-btn px-2.5 py-1 rounded-lg text-[11px] font-bold bg-blue-50 text-blue-800 border border-blue-200 hover:bg-blue-100 transition">
+              💻 [Demo] Sandbox: Giai thừa Python
+            </button>
+            <button type="button" data-preset="mini_quiz" class="socratic-preset-btn px-2.5 py-1 rounded-lg text-[11px] font-bold bg-purple-50 text-purple-800 border border-purple-200 hover:bg-purple-100 transition">
+              📝 [Demo] Quiz: Next.js RSC
+            </button>
+          </div>
+        </div>
+
+        <!-- Chat Input Bar -->
+        <form id="socraticChatForm" class="p-3 sm:px-5 border-t border-slate-200 bg-white">
+          <div class="flex items-center gap-2">
+            <button type="button" id="attachFileSimulateBtn" title="Đính kèm tài liệu/code" class="w-10 h-10 rounded-xl border border-slate-200 text-slate-500 hover:bg-slate-100 flex items-center justify-center shrink-0 transition">
+              📎
+            </button>
+            <input id="socraticChatInput" type="text" placeholder="Hỏi Sofi về bài học (VD: Tại sao Transformer cần Positional Encoding?)..." class="flex-1 px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-green-500 focus:bg-white transition" />
+            <button type="submit" class="w-10 h-10 rounded-full bg-green-600 hover:bg-green-700 text-white flex items-center justify-center shrink-0 shadow-sm transition">
+              ➤
+            </button>
+          </div>
+          <div class="mt-2 flex items-center justify-between text-[10px] font-extrabold tracking-wider text-slate-400 uppercase px-1">
+            <span>✨ SOCRATIC RAG V2 &nbsp;•&nbsp; ✓ GROUNDED LOGIC</span>
+            <span id="activeModeIndicator" class="text-green-600">CHẾ ĐỘ: GIẢI THÍCH</span>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- VIEW 3: XẾP HẠNG (LEADERBOARD)             -->
+    <!-- ========================================== -->
+    <section id="view-leaderboard" class="hidden space-y-6">
+      <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-100">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-2xl">🏆</span>
+              <h2 class="font-serif-title font-black text-xl sm:text-2xl text-slate-900 uppercase">BẢNG XẾP HẠNG</h2>
+            </div>
+            <p class="text-sm text-slate-600 mt-1">Cạnh tranh lành mạnh cùng các học viên AI Thực Chiến.</p>
+          </div>
+          <!-- Period Switcher -->
+          <div class="inline-flex bg-slate-100 p-1 rounded-2xl border border-slate-200 self-start">
+            <button type="button" data-lb-tab="today" class="lb-tab-btn px-4 py-2 rounded-xl text-xs font-extrabold bg-white text-green-700 shadow-sm transition">
+              Hôm nay
+            </button>
+            <button type="button" data-lb-tab="alltime" class="lb-tab-btn px-4 py-2 rounded-xl text-xs font-extrabold text-slate-600 hover:text-slate-900 transition">
+              Chung cuộc
+            </button>
+          </div>
+        </div>
+
+        <!-- Leaderboard List -->
+        <div id="leaderboardList" class="mt-5 space-y-2.5"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- RIGHT GAMIFICATION & PROGRESS SIDEBAR -->
+  <aside class="w-full lg:w-80 xl:w-88 shrink-0 px-4 pb-8 lg:px-5 lg:py-7 space-y-5 border-t lg:border-t-0 lg:border-l border-slate-200 bg-white/60">
+    <!-- Top Stats Bar (Streak & XP) -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-3.5 shadow-sm flex items-center justify-around">
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-xl">
+          🔥
+        </div>
+        <div>
+          <div id="sidebarStreakVal" class="font-extrabold text-base text-slate-900 leading-none">0</div>
+          <div class="text-[11px] font-bold text-slate-400 uppercase mt-0.5">Chuỗi ngày</div>
+        </div>
+      </div>
+      <div class="h-8 w-px bg-slate-200"></div>
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-xl">
+          🏅
+        </div>
+        <div>
+          <div id="sidebarXpVal" class="font-extrabold text-base text-amber-600 leading-none">0 XP</div>
+          <div class="text-[11px] font-bold text-slate-400 uppercase mt-0.5">Điểm tích lũy</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overall Progress Card -->
+    <div class="bg-white rounded-3xl border border-slate-200 p-5 shadow-sm space-y-3">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-500">TIẾN ĐỘ TỔNG QUÁT</h3>
+        <span id="overallSetsBadge" class="text-xs font-extrabold text-green-700 bg-green-50 px-2.5 py-0.5 rounded-full border border-green-200">Đã hoàn thành 0/46 bộ đề</span>
+      </div>
+      <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200/70">
+        <div id="overallProgressBar" class="h-full bg-green-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+      <div class="flex items-center justify-between text-xs font-semibold text-slate-500">
+        <span>Tỷ lệ hoàn thành: <strong id="overallPercentText" class="text-slate-800">0%</strong></span>
+        <span id="masteryRankLabel" class="text-green-600 font-bold">Học viên mới</span>
+      </div>
+    </div>
+
+    <!-- Account Callout / Logged-in Profile Card -->
+    <div id="accountCalloutCard" class="bg-[#fdfaf2] rounded-3xl border border-amber-200/80 p-5 shadow-sm space-y-3.5">
+      <div class="flex items-center gap-2.5">
+        <span class="text-xl">🛡️</span>
+        <h3 class="font-extrabold text-sm text-slate-900 uppercase tracking-tight">TẠO HỒ SƠ ĐỂ LƯU TIẾN TRÌNH!</h3>
+      </div>
+      <p class="text-xs text-slate-600 leading-relaxed">
+        Tạo tài khoản cá nhân giúp bạn lưu giữ điểm tích lũy (XP), chuỗi học tập (Streak) và đồng bộ hóa kết quả lên bảng xếp hạng chung.
+      </p>
+      <div class="space-y-2 pt-1">
+        <button type="button" id="sidebarCreateProfileBtn" class="w-full py-2.5 px-4 rounded-xl bg-green-600 hover:bg-green-700 text-white font-extrabold text-xs uppercase tracking-wider btn-3d-green">
+          TẠO HỒ SƠ
+        </button>
+        <button type="button" id="sidebarLoginBtn" class="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-green-50 text-green-700 border-2 border-green-600 font-extrabold text-xs uppercase tracking-wider transition">
+          ĐĂNG NHẬP
+        </button>
+      </div>
+    </div>
+
+    <!-- Logged-In Student Card (Hidden until user registers/logs in) -->
+    <div id="loggedInProfileCard" class="hidden bg-white rounded-3xl border border-green-200 p-5 shadow-sm space-y-3">
+      <div class="flex items-center justify-between">
+        <span class="px-2.5 py-0.5 rounded-full bg-green-100 text-green-800 text-[10px] font-extrabold uppercase">ĐÃ ĐỒNG BỘ PORTAL</span>
+        <button type="button" id="logoutProfileBtn" class="text-[11px] font-bold text-rose-600 hover:underline">Đăng xuất</button>
+      </div>
+      <div class="flex items-center gap-3">
+        <div id="profileAvatarInitials" class="w-12 h-12 rounded-2xl bg-green-600 text-white font-extrabold text-lg flex items-center justify-center shadow-sm">
+          HV
+        </div>
+        <div>
+          <div id="profileStudentName" class="font-extrabold text-sm text-slate-900">Học viên AI20K</div>
+          <div id="profileStudentId" class="text-xs font-semibold text-slate-500">MSSV: SE190001</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Personalized Waitlist Card -->
+    <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 text-white rounded-3xl p-5 shadow-md space-y-3">
+      <span class="inline-block px-2.5 py-1 rounded-full bg-green-500/20 border border-green-400/30 text-green-300 text-[10px] font-extrabold uppercase tracking-wider">
+        LỘ TRÌNH AI CÁ NHÂN HÓA
+      </span>
+      <h3 class="font-serif-title font-bold text-base leading-snug">
+        Khám phá lỗ hổng kiến thức qua AI trợ giảng
+      </h3>
+      <p class="text-xs text-slate-300 leading-relaxed">
+        Nhận gợi ý lý thuyết, bài thi cá nhân hóa sau mỗi lượt kiểm tra để củng cố tri thức nhanh chóng.
+      </p>
+      <form id="waitlistForm" class="space-y-2 pt-1">
+        <input id="waitlistEmailInput" type="email" required placeholder="Nhập email học tập..." class="w-full px-3.5 py-2.5 rounded-xl bg-white/10 border border-white/20 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-green-400" />
+        <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-green-500 hover:bg-green-400 text-slate-950 font-extrabold text-xs uppercase tracking-wider transition">
+          THAM GIA WAITLIST -&gt;
+        </button>
+      </form>
+      <div id="waitlistSuccessMsg" class="hidden text-xs font-bold text-green-300 bg-green-950/60 border border-green-500/40 rounded-xl p-2.5 text-center">
+        ✓ Đã đăng ký Waitlist thành công!
+      </div>
+    </div>
+  </aside>
+
+  <!-- ========================================================= -->
+  <!-- MODAL 1: CÁ NHÂN - SAPIA AI PORTAL (REGISTER / LOGIN)     -->
+  <!-- ========================================================= -->
+  <div id="authPortalModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-slate-200 relative animate-fadeIn">
+      <button type="button" id="closeAuthModalBtn" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold flex items-center justify-center">
+        ✕
+      </button>
+
+      <div class="text-center space-y-2">
+        <span class="inline-block px-3 py-1 rounded-full bg-green-100 text-green-800 text-[11px] font-extrabold uppercase tracking-wider">
+          SAPIA AI PORTAL
+        </span>
+        <h3 id="authModalTitle" class="font-serif-title font-black text-2xl text-slate-900">Đăng ký tài khoản</h3>
+        <p class="text-xs text-slate-500">Vui lòng sử dụng thông tin được cấp từ Giảng viên/BTC</p>
+      </div>
+
+      <form id="authPortalForm" class="mt-6 space-y-4">
+        <div>
+          <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-600 mb-1.5">HỌ VÀ TÊN</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-2.5 text-slate-400">👤</span>
+            <input id="authFullNameInput" type="text" required placeholder="Nhập họ và tên đầy đủ" class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-green-600 focus:bg-white" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-extrabold uppercase tracking-wider text-slate-600 mb-1.5">MÃ SỐ SINH VIÊN</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-2.5 text-slate-400">🎓</span>
+            <input id="authStudentIdInput" type="text" required placeholder="Nhập mã số sinh viên (VD: SE190245)" class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:outline-none focus:border-green-600 focus:bg-white" />
+          </div>
+        </div>
+
+        <button type="submit" id="authSubmitBtn" class="w-full py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-extrabold text-xs uppercase tracking-wider btn-3d-green">
+          ĐĂNG KÝ -&gt;
+        </button>
+      </form>
+
+      <div class="mt-4 space-y-2.5 text-center">
+        <button type="button" id="bypassLoginBtn" class="w-full py-2.5 px-4 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 font-extrabold text-xs uppercase tracking-wider transition">
+          ⚡ ĐĂNG NHẬP NHANH (BYPASS SERVER)
+        </button>
+
+        <div class="pt-1">
+          <button type="button" id="toggleAuthModeBtn" class="text-xs font-bold text-slate-600 hover:text-green-700">
+            Đã có tài khoản? <span class="text-green-600 underline font-extrabold">ĐĂNG NHẬP NGAY</span>
+          </button>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 text-[10px] font-extrabold tracking-widest text-slate-400 uppercase">
+          AI20K COHORT 2 • EDUGAP
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- MODAL 2: PRE-QUIZ SURVEY (KHẢO SÁT MỨC ĐỘ TIẾP THU)       -->
+  <!-- ========================================================= -->
+  <div id="preQuizSurveyModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-slate-200 space-y-5">
+      <div class="flex items-center justify-between">
+        <button type="button" id="closeSurveyModalBtn" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold flex items-center justify-center">
+          ✕
+        </button>
+        <button type="button" id="shareSurveyQuizBtn" class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 flex items-center gap-1.5">
+          <span>🔗</span> <span>Chia sẻ</span>
+        </button>
+      </div>
+
+      <div class="text-center space-y-1.5">
+        <h3 class="font-serif-title font-black text-xl sm:text-2xl text-slate-900">Khảo sát mức độ tiếp thu</h3>
+        <p class="text-xs sm:text-sm text-slate-600">
+          Để hệ thống tối ưu hóa lộ trình cá nhân, bạn hãy đánh giá độ hiểu bài hôm nay trên lớp nhé!
+        </p>
+      </div>
+
+      <!-- Selected Question Module Card -->
+      <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-2">
+        <div class="flex items-center justify-between gap-2">
+          <h4 id="surveyModuleTitle" class="font-extrabold text-sm sm:text-base text-slate-900">Phần 1: Khái niệm cơ bản LLM</h4>
+          <span id="surveyDifficultyBadge" class="px-2.5 py-0.5 rounded-full bg-green-100 text-green-800 text-[10px] font-extrabold uppercase">DỄ</span>
+        </div>
+        <p id="surveyModuleDesc" class="text-xs text-slate-600 leading-relaxed">
+          Nắm nền tảng về Transformer, tokenization và cách mô hình ngôn ngữ lớn xử lý ngữ cảnh.
+        </p>
+        <div class="flex items-center justify-between pt-1 text-[11px] font-bold text-slate-500">
+          <span id="surveyQuestionCount">5 câu hỏi trắc nghiệm thích ứng</span>
+          <span id="surveySubNodeCode" class="text-green-700">Bộ đề: C.1</span>
+        </div>
+      </div>
+
+      <!-- 5-Star Rating Control -->
+      <div class="space-y-2.5 text-center">
+        <p class="text-xs font-bold text-slate-700">
+          Bạn tự đánh giá độ hiểu bài học này trên lớp của mình như thế nào?
+        </p>
+        <div id="starRatingContainer" class="flex items-center justify-center gap-2">
+          <button type="button" data-star="1" class="star-btn w-11 h-11 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-amber-50 text-2xl transition">☆</button>
+          <button type="button" data-star="2" class="star-btn w-11 h-11 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-amber-50 text-2xl transition">☆</button>
+          <button type="button" data-star="3" class="star-btn w-11 h-11 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-amber-50 text-2xl transition">☆</button>
+          <button type="button" data-star="4" class="star-btn w-11 h-11 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-amber-50 text-2xl transition">☆</button>
+          <button type="button" data-star="5" class="star-btn w-11 h-11 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-amber-50 text-2xl transition">☆</button>
+        </div>
+        <div id="starRatingCaption" class="text-xs font-semibold text-slate-400 h-4">
+          Hãy chọn từ 1 đến 5 sao để bắt đầu
+        </div>
+      </div>
+
+      <button type="button" id="startQuizConfirmedBtn" disabled class="w-full py-3.5 rounded-2xl font-extrabold text-xs uppercase tracking-wider transition bg-slate-200 text-slate-400 cursor-not-allowed">
+        BẮT ĐẦU LÀM BÀI
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- MODAL 3: FULLSCREEN QUIZ & SOCRATIC AI TUTOR DRAWER       -->
+  <!-- ========================================================= -->
+  <div id="quizFullscreenModal" class="fixed inset-0 z-50 hidden flex-col bg-[#f8fafc] overflow-hidden">
+    <!-- Segmented Top Progress Bar -->
+    <div id="quizSegmentedBar" class="w-full grid grid-cols-5 gap-1.5 px-4 pt-3 bg-white"></div>
+
+    <!-- Quiz Header Controls -->
+    <div class="bg-white border-b border-slate-200 px-4 sm:px-8 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <button type="button" id="exitQuizBtn" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center">
+          ✕
+        </button>
+        <span id="quizCounterBadge" class="px-3 py-1 rounded-xl bg-orange-100 text-orange-800 font-extrabold text-xs">
+          Câu 1/5
+        </span>
+        <span id="quizDayOriginTag" class="hidden sm:inline-block px-3 py-1 rounded-xl bg-slate-100 text-slate-600 font-bold text-xs">
+          Từ: Day 1
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2.5">
+        <span id="quizLiveEloBadge" class="px-3 py-1 rounded-xl bg-green-50 border border-green-200 text-green-700 font-extrabold text-xs">
+          Elo: 1200
+        </span>
+        <button type="button" id="shareInsideQuizBtn" class="px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-xs font-bold text-slate-600">
+          Chia sẻ
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Quiz Body + Right AI Tutor Drawer Container -->
+    <div class="flex-1 flex overflow-hidden relative">
+      <!-- Center Question & Options Scroll Area -->
+      <div class="flex-1 overflow-y-auto px-4 py-6 sm:px-8">
+        <div class="max-w-3xl mx-auto space-y-6">
+
+          <!-- AI Hint Banner (Hidden unless triggered) -->
+          <div id="quizAiHintBox" class="hidden bg-amber-50 border border-amber-300 rounded-2xl p-4 text-xs sm:text-sm text-amber-900 flex items-start gap-3">
+            <span class="text-xl">💡</span>
+            <div>
+              <div class="font-extrabold uppercase text-[11px] tracking-wider text-amber-700">Gợi ý Socratic từ Sofi</div>
+              <p id="quizAiHintText" class="mt-0.5 leading-relaxed"></p>
+            </div>
+          </div>
+
+          <!-- Question Heading -->
+          <div class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-7 shadow-sm">
+            <h2 id="quizQuestionHeading" class="font-serif-title font-bold text-lg sm:text-xl text-slate-900 leading-relaxed"></h2>
+          </div>
+
+          <!-- 2x2 Answer Grid -->
+          <div id="quizOptionsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3.5"></div>
+
+          <!-- Skip Link -->
+          <div id="quizSkipWrapper" class="text-center">
+            <button type="button" id="skipQuestionBtn" class="text-xs font-bold text-slate-500 hover:text-slate-800 underline">
+              Chưa biết? Bỏ qua câu này để xem đáp án
+            </button>
+          </div>
+
+          <!-- Answer Validation & Detailed Explanation Box (Shown after answering) -->
+          <div id="quizFeedbackBox" class="hidden rounded-3xl border p-5 sm:p-6 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span id="feedbackStatusBadge" class="px-3 py-1 rounded-full text-xs font-extrabold uppercase">Chuẩn xác</span>
+                <span id="feedbackEloDeltaBadge" class="px-3 py-1 rounded-full bg-white border border-slate-200 text-xs font-extrabold text-slate-700">Elo: 1200 -&gt; 1215 (+15)</span>
+              </div>
+              <span id="feedbackTutorQuote" class="text-xs font-bold text-slate-700">🦊 AI Tutor: "Lựa chọn tuyệt vời! Bạn đang làm rất tốt."</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+              <div class="bg-white/90 rounded-2xl p-4 border border-green-200 space-y-1">
+                <div id="whyCorrectHeader" class="text-xs font-extrabold text-green-700 uppercase">✓ TẠI SAO ĐÚNG</div>
+                <p id="whyCorrectText" class="text-xs text-slate-700 leading-relaxed"></p>
+              </div>
+              <div class="bg-white/90 rounded-2xl p-4 border border-slate-200 space-y-1">
+                <div class="text-xs font-extrabold text-rose-700 uppercase">✕ TẠI SAO PHƯƠNG ÁN KHÁC CHƯA TỐI ƯU</div>
+                <p id="whyOthersWrongText" class="text-xs text-slate-600 leading-relaxed"></p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Right Side AI Tutor Drawer -->
+      <aside id="quizAiTutorDrawer" class="hidden w-full sm:w-96 bg-white border-l border-slate-200 flex-col justify-between shrink-0 z-20">
+        <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-green-600 text-white flex items-center justify-center text-lg">🦊</div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="font-extrabold text-sm text-slate-900">AI Tutor</span>
+                <span class="px-1.5 py-0.5 rounded bg-green-100 text-green-700 text-[9px] font-extrabold uppercase">ONLINE</span>
+              </div>
+              <div class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">SOCRATIC MODE</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="drawerHintCountBadge" class="text-[11px] font-bold text-slate-500">Gợi ý đã dùng: 0/3</span>
+            <button type="button" id="closeTutorDrawerBtn" class="w-7 h-7 rounded-lg bg-slate-200/70 hover:bg-slate-300 text-slate-700 text-xs font-bold">✕</button>
+          </div>
+        </div>
+
+        <div id="drawerChatMessages" class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50/40 text-xs"></div>
+
+        <form id="drawerChatForm" class="p-3 border-t border-slate-200 bg-white flex items-center gap-2">
+          <input id="drawerChatInput" type="text" placeholder="Hỏi trợ lý Socratic..." class="flex-1 px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:border-green-600" />
+          <button type="submit" class="px-3.5 py-2 rounded-xl bg-green-600 hover:bg-green-700 text-white font-extrabold text-xs">Gửi</button>
+        </form>
+      </aside>
+    </div>
+
+    <!-- Quiz Footer Bar -->
+    <div class="bg-white border-t border-slate-200 px-4 sm:px-8 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <button type="button" id="toggleQuizTutorDrawerBtn" class="px-4 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-extrabold text-xs transition">
+          Hỏi AI Tutor 🦊
+        </button>
+        <button type="button" id="triggerQuizAiHintBtn" class="px-4 py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 font-extrabold text-xs transition">
+          ✨ AI Hint (<span id="hintLeftCount">3</span>)
+        </button>
+      </div>
+
+      <div class="hidden lg:block text-[11px] font-semibold text-slate-400">
+        Mẹo: Bấm <kbd class="px-1.5 py-0.5 bg-slate-100 border rounded text-slate-700">1</kbd> <kbd class="px-1.5 py-0.5 bg-slate-100 border rounded text-slate-700">2</kbd> <kbd class="px-1.5 py-0.5 bg-slate-100 border rounded text-slate-700">3</kbd> <kbd class="px-1.5 py-0.5 bg-slate-100 border rounded text-slate-700">4</kbd> trên bàn phím để chọn nhanh | <kbd class="px-1.5 py-0.5 bg-slate-100 border rounded text-slate-700">Enter</kbd> để tiếp tục
+      </div>
+
+      <button type="button" id="nextQuizQuestionBtn" disabled class="px-6 py-2.5 rounded-xl font-extrabold text-xs uppercase tracking-wider transition bg-slate-200 text-slate-400 cursor-not-allowed">
+        TIẾP TỤC -&gt;
+      </button>
+    </div>
+  </div>
+
+  <!-- APPLICATION LOGIC -->
+  <script>
+    (function () {
+      // ==========================================
+      // 1. STATE & CURRICULUM DATA
+      // ==========================================
+      const state = {
+        activeNav: 'learn',
+        devMode: false,
+        weekCollapsed: false,
+        xp: 0,
+        streak: 0,
+        elo: 1200,
+        completedSets: 0,
+        totalSets: 46,
+        userProfile: null,
+        expandedNodeId: 'd1-n1',
+        activeGuidebookDayId: 'day1',
+        leaderboardTab: 'today',
+        socraticMode: 'Giải thích',
+        socraticTopic: 'Docker Compose',
+        surveyStarRating: 0,
+        pendingQuiz: null,
+        activeQuiz: {
+          isOpen: false,
+          dayId: 'day1',
+          nodeId: 'd1-n1',
+          subCode: 'C.1',
+          questions: [],
+          currentIndex: 0,
+          answered: false,
+          correctCount: 0,
+          hintsRemaining: 3,
+          drawerOpen: false
+        }
+      };
+
+      const roadmapDays = [
+        {
+          id: 'day1',
+          badge: 'Ngày 1',
+          title: 'Ngày 1: AI & LLM Foundation',
+          desc: 'Nắm vững Transformer, Tokenization, Embeddings và Inference Dynamics.',
+          bannerBg: 'bg-emerald-600',
+          borderAccent: 'border-emerald-600',
+          ringAccent: 'ring-emerald-200',
+          unlockedByDefault: true,
+          keyPoints: [
+            { title: 'Self-Attention Mechanism', body: 'Tính trọng số liên kết giữa mọi cặp token trong chuỗi qua bộ ba ma trận Query (Q), Key (K), Value (V) với độ phức tạp O(N²).' },
+            { title: 'Subword Tokenization (BPE)', body: 'Chia nhỏ từ hiếm thành các subword giúp cân bằng kích thước từ điển và tránh lỗi Out-Of-Vocabulary (OOV).' },
+            { title: 'Temperature & Top-p Sampling', body: 'Điều chỉnh phân phối xác suất đầu ra: Temperature thấp (0.1) giúp câu trả lời nhất quán; cao (0.8+) tăng tính sáng tạo.' },
+            { title: 'KV Cache trong Inference', body: 'Lưu trữ Key và Value của các token phía trước để tránh tính toán lại ở pha Autoregressive Decoding.' }
+          ],
+          nodes: [
+            { id: 'd1-n1', title: 'Transformer & LLM Foundations', icon: '📖', type: 'Lý thuyết nền tảng', mastery: 0, unlocked: true },
+            { id: 'd1-n2', title: 'Tokenization & Context Window', icon: '🏋️', type: 'Thực hành chuyên sâu', mastery: 0, unlocked: false }
+          ]
+        },
+        {
+          id: 'day2',
+          badge: 'Ngày 2',
+          title: 'Ngày 2: Xác định Bài toán cho AI',
+          desc: 'Định hình bài toán, đánh giá tính khả thi, chiến lược dữ liệu và đo lường chất lượng.',
+          bannerBg: 'bg-amber-500',
+          borderAccent: 'border-amber-500',
+          ringAccent: 'ring-amber-200',
+          unlockedByDefault: false,
+          keyPoints: [
+            { title: 'AI Problem Framing', body: 'Phân biệt bài toán cần Deterministic Rules và bài toán cần Generative/Probabilistic Reasoning.' },
+            { title: 'Evaluation-Driven Development', body: 'Xây dựng bộ Golden Dataset và rubric chấm điểm tự động (LLM-as-a-Judge) trước khi tối ưu hệ thống.' }
+          ],
+          nodes: [
+            { id: 'd2-n1', title: 'Khung đánh giá khả thi AI', icon: '🔒', unlockedIcon: '📖', type: 'Chiến lược sản phẩm', mastery: 0, unlocked: false },
+            { id: 'd2-n2', title: 'Chiến lược Dữ liệu & Metrics', icon: '🔒', unlockedIcon: '🏋️', type: 'Thực hành đo lường', mastery: 0, unlocked: false }
+          ]
+        },
+        {
+          id: 'day3',
+          badge: 'Ngày 3',
+          title: 'Ngày 3: Design Pattern ReAct',
+          desc: 'Kết hợp suy luận chuỗi (Reasoning) và gọi công cụ (Acting) cho AI Agent tự chủ.',
+          bannerBg: 'bg-blue-600',
+          borderAccent: 'border-blue-600',
+          ringAccent: 'ring-blue-200',
+          unlockedByDefault: false,
+          keyPoints: [
+            { title: 'Chu trình Thought → Action → Observation', body: 'Cho phép LLM lập luận từng bước, tra cứu API bên ngoài và tự điều chỉnh kế hoạch dựa trên kết quả trả về.' },
+            { title: 'Kiểm soát vòng lặp vô hạn', body: 'Đặt giới hạn max_iterations và cơ chế fallback an toàn khi công cụ trả về lỗi.' }
+          ],
+          nodes: [
+            { id: 'd3-n1', title: 'ReAct Loop & Agent Architecture', icon: '🔒', unlockedIcon: '📖', type: 'Kiến trúc Agent', mastery: 0, unlocked: false }
+          ]
+        },
+        {
+          id: 'day4',
+          badge: 'Ngày 4',
+          title: 'Ngày 4: Prompt Engineering & Tool Calling',
+          desc: 'Làm chủ Structured Outputs, Few-shot Prompting và giao thức Function Calling.',
+          bannerBg: 'bg-rose-600',
+          borderAccent: 'border-rose-600',
+          ringAccent: 'ring-rose-200',
+          unlockedByDefault: false,
+          keyPoints: [
+            { title: 'JSON Schema & Structured Outputs', body: 'Ép mô hình trả về đúng định dạng kiểu dữ liệu phục vụ tích hợp Backend tin cậy.' },
+            { title: 'Tool Selection & Parameter Extraction', body: 'Mô tả docstring rõ ràng để LLM chọn đúng hàm và trích xuất tham số chính xác.' }
+          ],
+          nodes: [
+            { id: 'd4-n1', title: 'Structured Prompt & Function Call', icon: '🔒', unlockedIcon: '🏋️', type: 'Kỹ thuật Prompt', mastery: 0, unlocked: false }
+          ]
+        },
+        {
+          id: 'day5',
+          badge: 'Ngày 5',
+          title: 'Ngày 5: Thiết kế sản phẩm AI cho sự không chắc chắn',
+          desc: 'Thiết kế UX thích ứng, Guardrails chống ảo giác và cơ chế Fallback an toàn.',
+          bannerBg: 'bg-teal-600',
+          borderAccent: 'border-teal-600',
+          ringAccent: 'ring-teal-200',
+          unlockedByDefault: false,
+          keyPoints: [
+            { title: 'Confidence Calibration & Citations', body: 'Hiển thị nguồn trích dẫn trực tiếp và cảnh báo khi độ tin cậy truy xuất thấp.' },
+            { title: 'Socratic Guardrails', body: 'Ngăn người học yêu cầu giải hộ bài tập trực tiếp, chuyển sang đặt câu hỏi gợi mở.' }
+          ],
+          nodes: [
+            { id: 'd5-n1', title: 'Guardrails & UX Bất định', icon: '🔒', unlockedIcon: '📖', type: 'Thiết kế AI UX', mastery: 0, unlocked: false }
+          ]
+        },
+        {
+          id: 'day6',
+          badge: 'Ngày 6',
+          title: 'Ngày 6: Hackathon Day & Prototyping',
+          desc: 'Tăng tốc xây dựng bản mẫu End-to-End từ ý tưởng đến sản phẩm AI chạy thực tế.',
+          bannerBg: 'bg-orange-600',
+          borderAccent: 'border-orange-600',
+          ringAccent: 'ring-orange-200',
+          unlockedByDefault: false,
+          keyPoints: [
+            { title: 'Rapid AI Prototyping', body: 'Kết hợp Next.js, Vercel AI SDK và FastAPI để dựng luồng streaming chỉ trong vài giờ.' }
+          ],
+          nodes: [
+            { id: 'd6-n1', title: 'Xây dựng AI Prototype Thực chiến', icon: '🔒', unlockedIcon: '🏋️', type: 'Hackathon Sprint', mastery: 0, unlocked: false }
+          ]
+        },
+        {
+          id: 'day7',
+          badge: 'Ngày 7',
+          title: 'Ngày 7: Data Foundations - Embedding & Vector Store',
+          desc: 'Chiến lược Chunking, Vector Similarity Search, Hybrid Search và kiến trúc RAG.',
+          bannerBg: 'bg-slate-700',
+          borderAccent: 'border-slate-700',
+          ringAccent: 'ring-slate-200',
+          unlockedByDefault: false,
+          keyPoints: [
+            { title: 'Semantic Chunking & Overlap', body: 'Cắt văn bản theo ngữ nghĩa kèm đoạn gối đầu (overlap) để không mất mạch văn khi truy xuất.' },
+            { title: 'Hybrid Search (BM25 + Dense Vector)', body: 'Kết hợp tìm kiếm từ khóa chính xác và tương đồng ngữ nghĩa cùng Reranker.' }
+          ],
+          nodes: [
+            { id: 'd7-n1', title: 'Embeddings, HNSW & Hybrid RAG', icon: '🔒', unlockedIcon: '📖', type: 'Hạ tầng Dữ liệu', mastery: 0, unlocked: false }
+          ]
+        },
+        {
+          id: 'day8',
+          badge: 'Ôn tập',
+          title: 'Ôn Tập Tổng Hợp Tuần 1',
+          desc: 'Tổng kiểm tra toàn bộ kiến thức Tuần 1 và đánh giá năng lực thực chiến.',
+          bannerBg: 'bg-cyan-600',
+          borderAccent: 'border-cyan-600',
+          ringAccent: 'ring-cyan-200',
+          unlockedByDefault: false,
+          keyPoints: [
+            { title: 'Tổng hợp Kiến trúc LLM → RAG → Agent', body: 'Kết nối liền mạch từ nền tảng Transformer đến ứng dụng RAG và ReAct Agent có Guardrails.' }
+          ],
+          nodes: [
+            { id: 'd8-n1', title: 'Đề Thi Tổng Hợp Tuần 1', icon: '🏆', unlockedIcon: '🏆', type: 'Kiểm tra tổng kết', mastery: 0, unlocked: false }
+          ]
+        }
+      ];
+
+      // Question Bank
+      const quizQuestionsBank = [
+        {
+          q: 'Trong kiến trúc Transformer, tại sao phép tính Scaled Dot-Product Attention lại cần chia cho √d_k?',
+          options: [
+            'A. Để giảm dung lượng bộ nhớ VRAM khi lưu trữ ma trận trọng số.',
+            'B. Để ngăn tích vô hướng Q·K^T phình quá lớn khi chiều d_k cao, tránh đẩy hàm Softmax vào vùng đạo hàm cực nhỏ (vanishing gradients).',
+            'C. Để thay thế hoàn toàn lớp Layer Normalization phía sau mỗi khối.',
+            'D. Để tự động cắt bỏ các token hiếm gặp trong câu đầu vào.'
+          ],
+          correct: 1,
+          hint: 'Hãy nghĩ xem điều gì xảy ra với hàm mũ trong Softmax khi các giá trị đầu vào có phương sai rất lớn.',
+          whyCorrect: 'Khi số chiều d_k lớn, tích vô hướng Q·K^T có phương sai tăng theo d_k, làm Softmax bão hòa về 0 hoặc 1 khiến gradient gần như triệt tiêu. Chia cho √d_k đưa phương sai về 1.',
+          whyWrong: 'Phương án A sai vì phép chia vô hướng không giảm VRAM; C và D không liên quan đến vai trò chuẩn hóa phương sai của hệ số tỷ lệ.'
+        },
+        {
+          q: 'Khi thiết kế hệ thống RAG cho giáo dục (như Sapia AI), chiến lược Hybrid Search kết hợp hai thành phần nào để đạt độ chính xác cao nhất?',
+          options: [
+            'A. Kết hợp tìm kiếm từ khóa (BM25 / Sparse) và tìm kiếm tương đồng ngữ nghĩa (Dense Vector Embedding).',
+            'B. Chỉ sử dụng Regex kết hợp với câu lệnh SQL LIKE.',
+            'C. Tăng Temperature của LLM lên 1.5 để mô hình tự suy diễn thêm thông tin.',
+            'D. Nén toàn bộ cơ sở dữ liệu vào một ảnh PNG duy nhất.'
+          ],
+          correct: 0,
+          hint: 'Một bên mạnh về khớp chính xác thuật ngữ/mã lỗi, một bên mạnh về hiểu ý nghĩa tương đồng.',
+          whyCorrect: 'BM25 bắt chính xác tên hàm, thuật ngữ chuyên ngành hoặc mã lỗi, trong khi Dense Vector nắm bắt ngữ nghĩa diễn đạt khác nhau.',
+          whyWrong: 'Regex/SQL không hiểu ngữ nghĩa; tăng Temperature gây ảo giác (hallucination); nén ảnh không phải kỹ thuật truy xuất văn bản.'
+        },
+        {
+          q: 'Mẫu thiết kế (Design Pattern) ReAct trong AI Agent hoạt động theo chu trình cốt lõi nào?',
+          options: [
+            'A. Compile → Link → Execute.',
+            'B. Thought (Suy luận) → Action (Gọi công cụ) → Observation (Quan sát kết quả).',
+            'C. Map → Shuffle → Reduce.',
+            'D. Encode → Compress → Decode.'
+          ],
+          correct: 1,
+          hint: 'Tên gọi ReAct là viết tắt của Reasoning + Acting.',
+          whyCorrect: 'ReAct xen kẽ bước suy luận nội tại (Thought) để chọn công cụ phù hợp (Action), sau đó đọc kết quả thực thi (Observation) để quyết định bước kế tiếp.',
+          whyWrong: 'Các chu trình còn lại thuộc về trình biên dịch, xử lý dữ liệu phân tán MapReduce và nén dữ liệu.'
+        },
+        {
+          q: 'Trong quá trình sinh văn bản (Autoregressive Decoding) của LLM, kỹ thuật KV Cache giải quyết nút thắt nào?',
+          options: [
+            'A. Tự động dịch câu trả lời sang 50 ngôn ngữ cùng lúc.',
+            'B. Tránh phải tính toán lại các vector Key và Value của những token đã xử lý ở các bước trước đó.',
+            'C. Tăng gấp đôi kích thước từ điển của bộ Tokenizer.',
+            'D. Thay thế hoàn toàn GPU bằng ổ cứng HDD.'
+          ],
+          correct: 1,
+          hint: 'Ở bước sinh token thứ t+1, các token từ 1 đến t có thay đổi biểu diễn Key và Value không?',
+          whyCorrect: 'Nhờ mặt nạ nhân quả (Causal Mask), Key và Value của các token quá khứ không đổi nên lưu vào bộ nhớ đệm (KV Cache) giúp giảm độ phức tạp mỗi bước sinh từ O(t²) xuống O(t).',
+          whyWrong: 'KV Cache chỉ tối ưu tốc độ suy luận (inference latency), không dịch thuật hay thay đổi bộ từ điển.'
+        },
+        {
+          q: 'Khi người học yêu cầu AI Tutor "Làm hộ em toàn bộ bài tập về nhà này", cơ chế Socratic Guardrail cần phản hồi như thế nào?',
+          options: [
+            'A. Đưa ngay toàn bộ đáp án và code hoàn chỉnh để tiết kiệm thời gian.',
+            'B. Từ chối giải hộ trực tiếp, đồng thời chia nhỏ vấn đề và đặt câu hỏi gợi mở để học viên tự suy luận bước đầu tiên.',
+            'C. Ngắt kết nối máy chủ ngay lập tức.',
+            'D. Trả về một đoạn văn bản ngẫu nhiên không liên quan.'
+          ],
+          correct: 1,
+          hint: 'Phương pháp Socratic hướng tới việc khơi gợi tư duy của người học thông qua câu hỏi định hướng.',
+          whyCorrect: 'Socratic Guardrail bảo vệ mục tiêu sư phạm: giữ tính trung thực học thuật và dẫn dắt người học tự khám phá lời giải qua từng gợi ý nhỏ.',
+          whyWrong: 'Đưa đáp án ngay làm mất khả năng tự tư duy; ngắt kết nối hoặc trả lời ngẫu nhiên làm hỏng trải nghiệm học tập.'
+        }
+      ];
+
+      // Leaderboard Data
+      const baseLeaderboard = [
+        { name: 'Nguyễn Minh Trí', initials: 'MT', xpToday: 580, xpAll: 4250, color: 'bg-amber-500' },
+        { name: 'Hoàng Hải Nam', initials: 'HN', xpToday: 510, xpAll: 3980, color: 'bg-slate-400' },
+        { name: 'Trần Quỳnh Anh', initials: 'QA', xpToday: 460, xpAll: 3610, color: 'bg-orange-500' },
+        { name: 'Phạm Minh Đức', initials: 'MĐ', xpToday: 320, xpAll: 2890, color: 'bg-emerald-600' },
+        { name: 'Lê Thu Trang', initials: 'TT', xpToday: 270, xpAll: 2540, color: 'bg-blue-600' },
+        { name: 'Đặng Tuấn Kiệt', initials: 'TK', xpToday: 210, xpAll: 2190, color: 'bg-purple-600' },
+        { name: 'Ngô Gia Bảo', initials: 'GB', xpToday: 150, xpAll: 1840, color: 'bg-teal-600' },
+        { name: 'Vũ Thảo Vy', initials: 'TV', xpToday: 90, xpAll: 1420, color: 'bg-rose-600' },
+        { name: 'Lê Minh Quân', initials: 'MQ', xpToday: 40, xpAll: 980, color: 'bg-indigo-600' }
+      ];
+
+      // ==========================================
+      // 2. HELPER UTILITIES
+      // ==========================================
+      function showToast(message, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        const bgClass = type === 'success'
+          ? 'bg-slate-900 text-white border-green-500'
+          : 'bg-amber-900 text-white border-amber-400';
+        toast.className = `px-4 py-3 rounded-2xl border-l-4 shadow-xl text-xs font-bold flex items-center gap-2.5 transition-all duration-300 ${bgClass}`;
+        toast.innerHTML = `<span>✨</span><span>${message}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateY(-8px)';
+          setTimeout(() => toast.remove(), 300);
+        }, 2800);
+      }
+
+      function updateGlobalStatsUI() {
+        document.getElementById('sidebarStreakVal').textContent = String(state.streak);
+        document.getElementById('mobileStreakVal').textContent = String(state.streak);
+        document.getElementById('sidebarXpVal').textContent = `${state.xp} XP`;
+        document.getElementById('mobileXpVal').textContent = `${state.xp} XP`;
+        document.getElementById('sidebarEloBadge').textContent = `${state.elo} ELO`;
+
+        const pct = Math.min(100, Math.round((state.completedSets / state.totalSets) * 100));
+        document.getElementById('overallSetsBadge').textContent = `Đã hoàn thành ${state.completedSets}/${state.totalSets} bộ đề`;
+        document.getElementById('overallProgressBar').style.width = `${pct}%`;
+        document.getElementById('overallPercentText').textContent = `${pct}%`;
+
+        const weekPct = Math.min(100, state.completedSets * 12);
+        document.getElementById('weekProgressLabel').textContent = `${weekPct}%`;
+        document.getElementById('weekProgressBar').style.width = `${weekPct}%`;
+
+        if (state.xp >= 100) {
+          document.getElementById('masteryRankLabel').textContent = 'Thực chiến AI';
+        } else if (state.xp > 0) {
+          document.getElementById('masteryRankLabel').textContent = 'Đang tăng tốc';
+        }
+      }
+
+      // ==========================================
+      // 3. RENDER ROADMAP (VIEW 1)
+      // ==========================================
+      function renderRoadmap() {
+        const container = document.getElementById('roadmapDaysContainer');
+        if (state.weekCollapsed) {
+          container.classList.add('hidden');
+          return;
+        }
+        container.classList.remove('hidden');
+        container.innerHTML = '';
+
+        roadmapDays.forEach((day, dIdx) => {
+          const daySection = document.createElement('div');
+          daySection.className = 'space-y-4';
+
+          // Day Banner Card
+          const banner = document.createElement('div');
+          banner.className = `${day.bannerBg} text-white rounded-3xl p-5 sm:p-6 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4`;
+          banner.innerHTML = `
+            <div class="space-y-1">
+              <div class="inline-flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-widest bg-black/20 px-2.5 py-0.5 rounded-full">
+                <span>${day.badge}</span>
+                <span>•</span>
+                <span>${state.devMode || day.unlockedByDefault ? 'ĐÃ MỞ KHÓA' : 'YÊU CẦU HOÀN THÀNH NGÀY TRƯỚC'}</span>
+              </div>
+              <h4 class="font-serif-title font-black text-lg sm:text-xl">${day.title}</h4>
+              <p class="text-xs sm:text-sm text-white/90 leading-relaxed">${day.desc}</p>
+            </div>
+            <button type="button" data-guidebook-day="${day.id}" class="open-guidebook-btn self-start sm:self-center shrink-0 px-4 py-2.5 rounded-2xl bg-white/20 hover:bg-white/30 backdrop-blur border border-white/30 text-white font-extrabold text-xs uppercase tracking-wider flex items-center gap-2 transition">
+              <span>📘</span>
+              <span>GUIDEBOOK</span>
+            </button>
+          `;
+          daySection.appendChild(banner);
+
+          // Learning Nodes Column
+          const nodesWrap = document.createElement('div');
+          nodesWrap.className = 'node-connector py-4 flex flex-col items-center gap-7';
+
+          day.nodes.forEach((node, nIdx) => {
+            const isUnlocked = state.devMode || node.unlocked;
+            const isExpanded = state.expandedNodeId === node.id;
+            const offsetClass = nIdx % 2 === 1 ? 'sm:translate-x-8' : 'sm:-translate-x-4';
+
+            const nodeCard = document.createElement('div');
+            nodeCard.className = `flex flex-col items-center ${offsetClass} transition-all`;
+
+            const statusBadgeHtml = isUnlocked
+              ? `<span class="mb-2 px-3 py-0.5 rounded-full bg-green-600 text-white font-extrabold text-[10px] uppercase tracking-widest shadow-sm animate-bounce">${node.mastery > 0 ? 'TIẾP TỤC' : 'START'}</span>`
+              : `<span class="mb-2 px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-500 font-extrabold text-[10px] uppercase tracking-widest">LOCKED</span>`;
+
+            const circleColorClass = isUnlocked
+              ? `${day.bannerBg} text-white ring-8 ${day.ringAccent}`
+              : 'bg-slate-200 text-slate-400 ring-8 ring-slate-100';
+
+            const displayIcon = isUnlocked ? (node.unlockedIcon || node.icon) : '🔒';
+
+            // Sub-nodes tray when expanded
+            const subNodesHtml = isExpanded
+              ? `
+                <div class="mt-4 bg-white rounded-3xl border-2 border-slate-200 p-4 shadow-xl max-w-md w-full space-y-3">
+                  <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                    <span class="text-xs font-extrabold text-slate-800">${node.title}</span>
+                    <span class="text-[11px] font-extrabold text-green-600">${node.mastery}% THÔNG THẠO</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500">Chọn một bộ câu hỏi con (C.1 – C.5) hoặc làm tổng hợp (ALL):</p>
+                  <div class="flex flex-wrap items-center justify-center gap-2 pt-1">
+                    ${['C.1', 'C.2', 'C.3', 'C.4', 'C.5'].map((code, idx) => `
+                      <button type="button" data-quiz-day="${day.id}" data-quiz-node="${node.id}" data-quiz-sub="${code}" class="start-subnode-btn w-11 h-11 rounded-2xl font-extrabold text-xs border-2 transition flex flex-col items-center justify-center ${
+                        isUnlocked
+                          ? 'bg-green-50 border-green-500 text-green-800 hover:bg-green-600 hover:text-white'
+                          : 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'
+                      }">
+                        <span>${idx + 1}</span>
+                        <span class="text-[9px] opacity-75">${code}</span>
+                      </button>
+                    `).join('')}
+                    <button type="button" data-quiz-day="${day.id}" data-quiz-node="${node.id}" data-quiz-sub="ALL" class="start-subnode-btn px-3.5 h-11 rounded-2xl font-extrabold text-xs border-2 transition flex items-center gap-1 ${
+                      isUnlocked
+                        ? 'bg-amber-500 border-amber-600 text-white hover:bg-amber-600 shadow-sm'
+                        : 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'
+                    }">
+                      <span>⚡</span>
+                      <span>ALL</span>
+                    </button>
+                  </div>
+                </div>
+              `
+              : '';
+
+            nodeCard.innerHTML = `
+              ${statusBadgeHtml}
+              <button type="button" data-node-toggle="${node.id}" data-node-unlocked="${isUnlocked}" class="node-circle-btn w-20 h-20 rounded-full ${circleColorClass} node-btn-shadow flex items-center justify-center text-3xl focus:outline-none">
+                <span>${displayIcon}</span>
+              </button>
+              <div class="mt-2.5 bg-white px-4 py-2 rounded-2xl border border-slate-200 shadow-sm text-center">
+                <div class="font-extrabold text-xs sm:text-sm text-slate-800">${node.title}</div>
+                <div class="text-[10px] font-extrabold tracking-wider uppercase mt-0.5 ${node.mastery > 0 ? 'text-green-600' : 'text-slate-400'}">
+                  ${node.mastery}% THÔNG THẠO
+                </div>
+              </div>
+              ${subNodesHtml}
+            `;
+
+            nodesWrap.appendChild(nodeCard);
+          });
+
+          daySection.appendChild(nodesWrap);
+          container.appendChild(daySection);
+        });
+
+        // Attach Guidebook listeners
+        document.querySelectorAll('.open-guidebook-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            openGuidebook(btn.getAttribute('data-guidebook-day'));
+          });
+        });
+
+        // Attach Node Circle toggle listeners
+        document.querySelectorAll('.node-circle-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const nodeId = btn.getAttribute('data-node-toggle');
+            const isUnlocked = btn.getAttribute('data-node-unlocked') === 'true';
+            if (!isUnlocked) {
+              showToast('Bài học này đang khóa! Hãy bật "DEV MODE: ON" ở góc trên bên phải để mở khóa ngay.', 'warn');
+              return;
+            }
+            state.expandedNodeId = state.expandedNodeId === nodeId ? null : nodeId;
+            renderRoadmap();
+          });
+        });
+
+        // Attach Sub-node Quiz Launch listeners
+        document.querySelectorAll('.start-subnode-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const dayId = btn.getAttribute('data-quiz-day');
+            const nodeId = btn.getAttribute('data-quiz-node');
+            const subCode = btn.getAttribute('data-quiz-sub');
+            const dayObj = roadmapDays.find(d => d.id === dayId);
+            const nodeObj = dayObj ? dayObj.nodes.find(n => n.id === nodeId) : null;
+            if (!state.devMode && nodeObj && !nodeObj.unlocked) {
+              showToast('Hãy bật DEV MODE: ON hoặc hoàn thành bài học trước để mở bộ đề này!', 'warn');
+              return;
+            }
+            openPreQuizSurvey(dayId, nodeId, subCode);
+          });
+        });
+      }
+
+      // ==========================================
+      // 4. GUIDEBOOK VIEW (VIEW 1B)
+      // ==========================================
+      function openGuidebook(dayId) {
+        const day = roadmapDays.find(d => d.id === dayId) || roadmapDays[0];
+        state.activeGuidebookDayId = day.id;
+
+        document.getElementById('view-learn').classList.add('hidden');
+        document.getElementById('view-tutor').classList.add('hidden');
+        document.getElementById('view-leaderboard').classList.add('hidden');
+        document.getElementById('view-guidebook').classList.remove('hidden');
+
+        const headerCard = document.getElementById('guidebookHeaderCard');
+        headerCard.className = `rounded-3xl p-6 text-white shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${day.bannerBg}`;
+
+        document.getElementById('guidebookBadge').textContent = `HƯỚNG DẪN ${day.badge.toUpperCase()}`;
+        document.getElementById('guidebookTitle').textContent = day.title;
+        document.getElementById('guidebookDesc').textContent = day.desc;
+
+        const kpContainer = document.getElementById('guidebookKeyPoints');
+        kpContainer.innerHTML = day.keyPoints.map(kp => `
+          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+            <div class="font-extrabold text-xs sm:text-sm text-slate-900 flex items-center gap-1.5">
+              <span class="text-green-600">✔</span>
+              <span>${kp.title}</span>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">${kp.body}</p>
+          </div>
+        `).join('');
+      }
+
+      document.getElementById('backFromGuidebookBtn').addEventListener('click', () => {
+        switchMainTab('learn');
+      });
+
+      document.getElementById('guidebookStartQuizBtn').addEventListener('click', () => {
+        const day = roadmapDays.find(d => d.id === state.activeGuidebookDayId) || roadmapDays[0];
+        openPreQuizSurvey(day.id, day.nodes[0].id, 'C.1');
+      });
+
+      // ==========================================
+      // 5. PRE-QUIZ SURVEY & QUIZ ENGINE
+      // ==========================================
+      function openPreQuizSurvey(dayId, nodeId, subCode) {
+        const day = roadmapDays.find(d => d.id === dayId) || roadmapDays[0];
+        const node = day.nodes.find(n => n.id === nodeId) || day.nodes[0];
+
+        state.pendingQuiz = { dayId, nodeId, subCode, dayTitle: day.badge, nodeTitle: node.title };
+        state.surveyStarRating = 0;
+
+        document.getElementById('surveyModuleTitle').textContent = `Phần 1: ${node.title}`;
+        document.getElementById('surveyModuleDesc').textContent = day.desc;
+        document.getElementById('surveySubNodeCode').textContent = `Bộ đề: ${subCode}`;
+        document.getElementById('surveyDifficultyBadge').textContent = subCode === 'ALL' ? 'TỔNG HỢP' : 'DỄ';
+
+        updateStarRatingUI(0);
+        const modal = document.getElementById('preQuizSurveyModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+
+      function updateStarRatingUI(rating) {
+        state.surveyStarRating = rating;
+        const captions = [
+          'Hãy chọn từ 1 đến 5 sao để bắt đầu',
+          '1 sao — Mới nghe lần đầu, cần giải thích kỹ từ đầu',
+          '2 sao — Nắm sơ bộ khái niệm nhưng còn bối rối',
+          '3 sao — Hiểu khoảng 60% nội dung trên lớp',
+          '4 sao — Nắm khá vững, muốn luyện thêm câu hỏi vận dụng',
+          '5 sao — Tự tin làm chủ kiến thức, sẵn sàng thử thách ELO cao!'
+        ];
+        document.querySelectorAll('.star-btn').forEach(btn => {
+          const val = Number(btn.getAttribute('data-star'));
+          if (val <= rating) {
+            btn.textContent = '★';
+            btn.className = 'star-btn w-11 h-11 rounded-2xl border-2 border-amber-400 bg-amber-50 text-amber-500 text-2xl transition scale-105';
+          } else {
+            btn.textContent = '☆';
+            btn.className = 'star-btn w-11 h-11 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-amber-50 text-slate-400 text-2xl transition';
+          }
+        });
+        document.getElementById('starRatingCaption').textContent = captions[rating];
+
+        const startBtn = document.getElementById('startQuizConfirmedBtn');
+        if (rating > 0) {
+          startBtn.disabled = false;
+          startBtn.className = 'w-full py-3.5 rounded-2xl font-extrabold text-xs uppercase tracking-wider bg-green-600 hover:bg-green-700 text-white btn-3d-green cursor-pointer';
+        } else {
+          startBtn.disabled = true;
+          startBtn.className = 'w-full py-3.5 rounded-2xl font-extrabold text-xs uppercase tracking-wider bg-slate-200 text-slate-400 cursor-not-allowed';
+        }
+      }
+
+      document.querySelectorAll('.star-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          updateStarRatingUI(Number(btn.getAttribute('data-star')));
+        });
+      });
+
+      document.getElementById('closeSurveyModalBtn').addEventListener('click', () => {
+        const modal = document.getElementById('preQuizSurveyModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      });
+
+      document.getElementById('shareSurveyQuizBtn').addEventListener('click', () => {
+        showToast('Đã sao chép đường dẫn bộ đề ?set=day1-basics vào bộ nhớ tạm!');
+      });
+
+      document.getElementById('startQuizConfirmedBtn').addEventListener('click', () => {
+        if (!state.pendingQuiz || state.surveyStarRating === 0) return;
+        const surveyModal = document.getElementById('preQuizSurveyModal');
+        surveyModal.classList.add('hidden');
+        surveyModal.classList.remove('flex');
+        launchQuizSession(state.pendingQuiz);
+      });
+
+      function launchQuizSession(quizMeta) {
+        state.activeQuiz = {
+          isOpen: true,
+          dayId: quizMeta.dayId,
+          nodeId: quizMeta.nodeId,
+          subCode: quizMeta.subCode,
+          dayTitle: quizMeta.dayTitle,
+          questions: quizQuestionsBank,
+          currentIndex: 0,
+          answered: false,
+          correctCount: 0,
+          hintsRemaining: 3,
+          drawerOpen: false
+        };
+
+        document.getElementById('hintLeftCount').textContent = '3';
+        document.getElementById('drawerHintCountBadge').textContent = 'Gợi ý đã dùng: 0/3';
+        document.getElementById('drawerChatMessages').innerHTML = `
+          <div class="bg-white p-3.5 rounded-2xl border border-slate-200 space-y-1 shadow-sm">
+            <div class="font-extrabold text-green-700">🦊 Sofi (Socratic Tutor)</div>
+            <p class="text-slate-600 leading-relaxed">Chào bạn! Mình sẽ không đưa sẵn đáp án A/B/C/D mà sẽ đặt câu hỏi gợi mở giúp bạn tự suy luận ra bản chất nhé.</p>
+          </div>
+        `;
+
+        const modal = document.getElementById('quizFullscreenModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        renderActiveQuizQuestion();
+      }
+
+      function renderActiveQuizQuestion() {
+        const qState = state.activeQuiz;
+        const currentQ = qState.questions[qState.currentIndex];
+        qState.answered = false;
+
+        // Segmented top progress bar
+        const segBar = document.getElementById('quizSegmentedBar');
+        segBar.innerHTML = qState.questions.map((_, idx) => {
+          let color = 'bg-slate-200';
+          if (idx < qState.currentIndex) color = 'bg-orange-500';
+          else if (idx === qState.currentIndex) color = 'bg-orange-400 animate-pulse';
+          return `<div class="h-2 rounded-full ${color}"></div>`;
+        }).join('');
+
+        document.getElementById('quizCounterBadge').textContent = `Câu ${qState.currentIndex + 1}/${qState.questions.length}`;
+        document.getElementById('quizDayOriginTag').textContent = `Từ: ${qState.dayTitle} (${qState.subCode})`;
+        document.getElementById('quizLiveEloBadge').textContent = `Elo: ${state.elo}`;
+
+        document.getElementById('quizAiHintBox').classList.add('hidden');
+        document.getElementById('quizFeedbackBox').classList.add('hidden');
+        document.getElementById('quizSkipWrapper').classList.remove('hidden');
+
+        document.getElementById('quizQuestionHeading').textContent = currentQ.q;
+
+        const grid = document.getElementById('quizOptionsGrid');
+        const letters = ['A', 'B', 'C', 'D'];
+        grid.innerHTML = currentQ.options.map((optText, idx) => `
+          <button type="button" data-opt-idx="${idx}" class="quiz-option-card text-left p-4 sm:p-5 rounded-2xl bg-white border-2 border-slate-200 hover:border-amber-400 hover:bg-amber-50/30 transition flex items-start gap-3.5 shadow-sm">
+            <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-900 font-extrabold text-xs flex items-center justify-center shrink-0 mt-0.5">
+              ${letters[idx]}
+            </span>
+            <span class="text-xs sm:text-sm font-semibold text-slate-800 leading-relaxed">${optText.replace(/^[A-D]\.\s*/, '')}</span>
+          </button>
+        `).join('');
+
+        document.querySelectorAll('.quiz-option-card').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const idx = Number(btn.getAttribute('data-opt-idx'));
+            evaluateQuizAnswer(idx);
+          });
+        });
+
+        const nextBtn = document.getElementById('nextQuizQuestionBtn');
+        nextBtn.disabled = true;
+        nextBtn.textContent = 'TIẾP TỤC ->';
+        nextBtn.className = 'px-6 py-2.5 rounded-xl font-extrabold text-xs uppercase tracking-wider transition bg-slate-200 text-slate-400 cursor-not-allowed';
+      }
+
+      function evaluateQuizAnswer(selectedIdx) {
+        const qState = state.activeQuiz;
+        if (qState.answered) return;
+        qState.answered = true;
+
+        const currentQ = qState.questions[qState.currentIndex];
+        const isCorrect = selectedIdx === currentQ.correct;
+        const letters = ['A', 'B', 'C', 'D'];
+
+        const prevElo = state.elo;
+        if (isCorrect) {
+          qState.correctCount += 1;
+          state.elo += 15;
+          state.xp += 20;
+        } else {
+          state.elo = Math.max(1000, state.elo - 5);
+        }
+        updateGlobalStatsUI();
+        document.getElementById('quizLiveEloBadge').textContent = `Elo: ${state.elo}`;
+
+        // Style option cards
+        document.querySelectorAll('.quiz-option-card').forEach((card, idx) => {
+          card.disabled = true;
+          if (idx === currentQ.correct) {
+            card.className = 'quiz-option-card text-left p-4 sm:p-5 rounded-2xl bg-green-50 border-2 border-green-600 flex items-start gap-3.5 shadow-sm';
+          } else if (idx === selectedIdx && !isCorrect) {
+            card.className = 'quiz-option-card text-left p-4 sm:p-5 rounded-2xl bg-rose-50 border-2 border-rose-500 flex items-start gap-3.5 opacity-90';
+          } else {
+            card.className = 'quiz-option-card text-left p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 flex items-start gap-3.5 opacity-55';
+          }
+        });
+
+        document.getElementById('quizSkipWrapper').classList.add('hidden');
+
+        const fbBox = document.getElementById('quizFeedbackBox');
+        fbBox.classList.remove('hidden');
+        fbBox.className = `rounded-3xl border-2 p-5 sm:p-6 space-y-4 ${
+          isCorrect ? 'bg-green-50/90 border-green-300' : 'bg-amber-50/90 border-amber-300'
+        }`;
+
+        const statusBadge = document.getElementById('feedbackStatusBadge');
+        statusBadge.textContent = isCorrect ? 'Chuẩn xác' : (selectedIdx === -1 ? 'Đã bỏ qua' : 'Chưa chính xác');
+        statusBadge.className = `px-3 py-1 rounded-full text-xs font-extrabold uppercase ${
+          isCorrect ? 'bg-green-600 text-white' : 'bg-amber-600 text-white'
+        }`;
+
+        const delta = state.elo - prevElo;
+        const sign = delta >= 0 ? `+${delta}` : `${delta}`;
+        document.getElementById('feedbackEloDeltaBadge').textContent = `Elo: ${prevElo} -> ${state.elo} (${sign})`;
+
+        document.getElementById('feedbackTutorQuote').textContent = isCorrect
+          ? '🦊 AI Tutor: "Lựa chọn tuyệt vời! Bạn đang nắm rất chắc bản chất kỹ thuật."'
+          : '🦊 AI Tutor: "Đừng lo nhé! Hãy đọc kỹ phần phân tích bên dưới để hiểu rõ cơ chế."';
+
+        document.getElementById('whyCorrectHeader').textContent = `✓ TẠI SAO ĐÚNG (${letters[currentQ.correct]})`;
+        document.getElementById('whyCorrectText').textContent = currentQ.whyCorrect;
+        document.getElementById('whyOthersWrongText').textContent = currentQ.whyWrong;
+
+        const nextBtn = document.getElementById('nextQuizQuestionBtn');
+        nextBtn.disabled = false;
+        nextBtn.textContent = qState.currentIndex === qState.questions.length - 1 ? 'HOÀN THÀNH BỘ ĐỀ ->' : 'TIẾP TỤC ->';
+        nextBtn.className = 'px-6 py-2.5 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-orange-500 hover:bg-orange-600 text-white btn-3d-orange cursor-pointer';
+      }
+
+      document.getElementById('skipQuestionBtn').addEventListener('click', () => {
+        evaluateQuizAnswer(-1);
+      });
+
+      document.getElementById('nextQuizQuestionBtn').addEventListener('click', () => {
+        const qState = state.activeQuiz;
+        if (!qState.answered) return;
+        if (qState.currentIndex < qState.questions.length - 1) {
+          qState.currentIndex += 1;
+          renderActiveQuizQuestion();
+        } else {
+          finishQuizSession();
+        }
+      });
+
+      function finishQuizSession() {
+        const qState = state.activeQuiz;
+        qState.isOpen = false;
+        const modal = document.getElementById('quizFullscreenModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+
+        state.completedSets += 1;
+        if (state.streak === 0) state.streak = 1;
+        state.xp += 30;
+
+        // Update node mastery and unlock next node
+        const dayObj = roadmapDays.find(d => d.id === qState.dayId);
+        if (dayObj) {
+          const nodeObj = dayObj.nodes.find(n => n.id === qState.nodeId);
+          if (nodeObj) {
+            nodeObj.mastery = Math.min(100, nodeObj.mastery + 25);
+          }
+          dayObj.nodes.forEach(n => { n.unlocked = true; });
+        }
+
+        updateGlobalStatsUI();
+        renderRoadmap();
+        renderLeaderboard();
+        showToast(`Hoàn thành bộ đề ${qState.subCode}! Đúng ${qState.correctCount}/${qState.questions.length} câu • +50 XP tổng thưởng!`);
+      }
+
+      document.getElementById('exitQuizBtn').addEventListener('click', () => {
+        state.activeQuiz.isOpen = false;
+        const modal = document.getElementById('quizFullscreenModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      });
+
+      document.getElementById('shareInsideQuizBtn').addEventListener('click', () => {
+        showToast('Đã sao chép liên kết câu hỏi hiện tại vào clipboard!');
+      });
+
+      // AI Hint inside Quiz
+      document.getElementById('triggerQuizAiHintBtn').addEventListener('click', () => {
+        const qState = state.activeQuiz;
+        if (qState.hintsRemaining <= 0) {
+          showToast('Bạn đã sử dụng hết 3 lượt AI Hint trong bộ đề này!', 'warn');
+          return;
+        }
+        const currentQ = qState.questions[qState.currentIndex];
+        const hintBox = document.getElementById('quizAiHintBox');
+        if (hintBox.classList.contains('hidden')) {
+          qState.hintsRemaining -= 1;
+          const used = 3 - qState.hintsRemaining;
+          document.getElementById('hintLeftCount').textContent = String(qState.hintsRemaining);
+          document.getElementById('drawerHintCountBadge').textContent = `Gợi ý đã dùng: ${used}/3`;
+          document.getElementById('quizAiHintText').textContent = currentQ.hint;
+          hintBox.classList.remove('hidden');
+        }
+      });
+
+      // AI Tutor Drawer inside Quiz
+      function toggleQuizDrawer(forceState) {
+        const qState = state.activeQuiz;
+        qState.drawerOpen = typeof forceState === 'boolean' ? forceState : !qState.drawerOpen;
+        const drawer = document.getElementById('quizAiTutorDrawer');
+        const toggleBtn = document.getElementById('toggleQuizTutorDrawerBtn');
+        if (qState.drawerOpen) {
+          drawer.classList.remove('hidden');
+          drawer.classList.add('flex');
+          toggleBtn.textContent = 'Đóng AI Tutor 🦊';
+        } else {
+          drawer.classList.add('hidden');
+          drawer.classList.remove('flex');
+          toggleBtn.textContent = 'Hỏi AI Tutor 🦊';
+        }
+      }
+
+      document.getElementById('toggleQuizTutorDrawerBtn').addEventListener('click', () => toggleQuizDrawer());
+      document.getElementById('closeTutorDrawerBtn').addEventListener('click', () => toggleQuizDrawer(false));
+
+      document.getElementById('drawerChatForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = document.getElementById('drawerChatInput');
+        const text = input.value.trim();
+        if (!text) return;
+        input.value = '';
+
+        const currentQ = state.activeQuiz.questions[state.activeQuiz.currentIndex];
+        const stream = document.getElementById('drawerChatMessages');
+        stream.innerHTML += `
+          <div class="bg-green-600 text-white p-3 rounded-2xl ml-6 font-medium">${text}</div>
+          <div class="bg-white p-3.5 rounded-2xl border border-slate-200 mr-4 space-y-1 shadow-sm">
+            <div class="font-extrabold text-green-700">🦊 Sofi (Socratic Mode)</div>
+            <p class="text-slate-600 leading-relaxed">Câu hỏi rất hay! Thay vì nhìn vào kết quả cuối, bạn hãy thử suy nghĩ: <em>"${currentQ.hint}"</em> — từ đó loại trừ 2 phương án không liên quan trước nhé!</p>
+          </div>
+        `;
+        stream.scrollTop = stream.scrollHeight;
+      });
+
+      // Keyboard Shortcuts (1, 2, 3, 4 and Enter) inside Quiz
+      window.addEventListener('keydown', (e) => {
+        if (!state.activeQuiz.isOpen) return;
+        const activeTag = document.activeElement ? document.activeElement.tagName : '';
+        if (activeTag === 'INPUT' || activeTag === 'TEXTAREA') return;
+
+        if (['1', '2', '3', '4'].includes(e.key) && !state.activeQuiz.answered) {
+          evaluateQuizAnswer(Number(e.key) - 1);
+        } else if (e.key === 'Enter' && state.activeQuiz.answered) {
+          document.getElementById('nextQuizQuestionBtn').click();
+        }
+      });
+
+      // ==========================================
+      // 6. SOCRATIC AI ASSISTANT PAGE (VIEW 2)
+      // ==========================================
+      const socraticDemoResponses = {
+        welcome: {
+          badge: 'SOCRATIC GREETING',
+          content: `Xin chào! Mình là <strong>Sofi</strong> — Trợ lý Socratic AI của bạn. Chủ đề hiện tại là <strong>Docker Compose &amp; Container Orchestration</strong>.<br><br>Thay vì đưa sẵn lời giải thụ động, mình sẽ đồng hành cùng bạn qua các câu hỏi định hướng dựa trên tài liệu bài giảng đã xác thực (Grounded RAG). Bạn muốn mình hỗ trợ theo chế độ nào hôm nay?`
+        },
+        guardrail: {
+          badge: '🚨 GUARDRAIL TRIGGERED • ACADEMIC INTEGRITY',
+          content: `<strong>[Chặn yêu cầu giải hộ trực tiếp]</strong> Mình nhận thấy bạn đang yêu cầu viết sẵn toàn bộ lời giải cho bài tập chấm điểm.<br><br>Theo giao thức <strong>Socratic Guardrail</strong> của Sapia AI, mình không thể cung cấp nguyên văn đáp án. Tuy nhiên, chúng ta hãy cùng bóc tách bước 1 nhé: <em>Trong file <code>docker-compose.yml</code> của bạn, hai service <code>web</code> và <code>redis</code> cần giao tiếp qua cổng nào?</em>`
+        },
+        fallback: {
+          badge: '⚠️ LOW CONFIDENCE FALLBACK (SCORE: 0.41 < 0.75)',
+          content: `<strong>[Cảnh báo độ tin cậy truy xuất thấp]</strong> Câu hỏi của bạn nằm ngoài phạm vi tài liệu chính thức của học phần <em>Tuần 1: AI &amp; LLM Foundation</em>.<br><br>Để tránh hiện tượng ảo giác (Hallucination), Sofi tạm dừng suy diễn tự do. Bạn có muốn chuyển câu hỏi này tới <strong>Giảng viên hướng dẫn</strong> hoặc thu hẹp câu hỏi về chủ đề Docker Compose / Transformer không?`
+        },
+        rag_slide: {
+          badge: '🦊 GROUNDED RAG • SLIDE #14 (DOCKER NETWORKING)',
+          content: `Theo <strong>Slide 14 — Docker Compose Networking</strong>: Khi bạn chạy <code>docker compose up</code>, Docker tự động khởi tạo một <em>default bridge network</em> chung cho toàn bộ các service trong cùng file cấu hình.<br><br>💡 <strong>Câu hỏi Socratic cho bạn:</strong> Nhờ cơ chế DNS nội bộ này, container <code>backend</code> có thể gọi tới database bằng tên service (ví dụ <code>postgres:5432</code>) hay bắt buộc phải dùng địa chỉ IP cứng?`
+        },
+        sandbox_py: {
+          badge: '💻 CLIENT SANDBOX • PYTHON TRACE',
+          content: `Mình đã chạy thử hàm đệ quy tính giai thừa của bạn trong <strong>Client Sandbox</strong>:<br><pre class="mt-2 p-3 rounded-xl bg-slate-900 text-green-300 font-mono text-xs overflow-x-auto">def factorial(n):\n    if n == 0: return 1\n    return n * factorial(n - 1)\n# Output: factorial(5) => 120 (Time: 0.04ms)</pre><div class="mt-2">Hãy thử suy nghĩ: Nếu người dùng truyền vào <code>n = -1</code> thì điều gì sẽ xảy ra với ngăn xếp lệnh (Call Stack)?</div>`
+        },
+        mini_quiz: {
+          badge: '📝 ADAPTIVE MINI-QUIZ • NEXT.JS RSC',
+          content: `<strong>Thử thách nhanh 30 giây (Elo 1100):</strong> Trong Next.js App Router, tại sao <em>React Server Components (RSC)</em> giúp giảm kích thước gói JavaScript tải về trình duyệt?<br><br>A. Vì RSC chỉ chạy trên trình duyệt bằng WebAssembly.<br>B. Vì mã nguồn và thư viện phụ thuộc của RSC được thực thi trên Server và chỉ gửi kết quả tuần tự hóa (RSC Payload) về Client.`
+        }
+      };
+
+      function appendSocraticMessage(sender, htmlText, badgeText) {
+        const stream = document.getElementById('socraticChatStream');
+        const msgWrap = document.createElement('div');
+        if (sender === 'user') {
+          msgWrap.className = 'flex justify-end';
+          msgWrap.innerHTML = `
+            <div class="max-w-lg bg-green-600 text-white px-4 py-3 rounded-2xl rounded-tr-none text-xs sm:text-sm font-medium shadow-sm">
+              ${htmlText}
+            </div>
+          `;
+        } else {
+          msgWrap.className = 'flex items-start gap-3';
+          msgWrap.innerHTML = `
+            <div class="w-10 h-10 rounded-2xl bg-green-600 text-white flex items-center justify-center text-lg shrink-0 shadow-sm">
+              🦉
+            </div>
+            <div class="flex-1 bg-white border border-slate-200 rounded-2xl rounded-tl-none p-4 shadow-sm space-y-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-extrabold text-xs text-slate-900">Sofi — Socratic AI Assistant</span>
+                <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-extrabold text-[10px] uppercase">${badgeText || 'GROUNDED RAG'}</span>
+              </div>
+              <div class="text-xs sm:text-sm text-slate-700 leading-relaxed">${htmlText}</div>
+              <div class="pt-2 border-t border-slate-100 flex items-center gap-2">
+                <button type="button" class="feedback-cite-btn px-2 py-1 rounded-lg bg-slate-50 hover:bg-green-50 text-slate-500 hover:text-green-700 text-xs font-bold border border-slate-200 transition">👍</button>
+                <button type="button" class="feedback-cite-btn px-2 py-1 rounded-lg bg-slate-50 hover:bg-rose-50 text-slate-500 hover:text-rose-700 text-xs font-bold border border-slate-200 transition">👎</button>
+                <button type="button" class="feedback-report-btn px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-amber-50 text-slate-500 hover:text-amber-800 text-[10px] font-extrabold uppercase border border-slate-200 transition">
+                  BÁO LỖI TRÍCH DẪN
+                </button>
+              </div>
+            </div>
+          `;
+        }
+        stream.appendChild(msgWrap);
+        stream.scrollTop = stream.scrollHeight;
+
+        msgWrap.querySelectorAll('.feedback-cite-btn').forEach(btn => {
+          btn.addEventListener('click', () => showToast('Cảm ơn phản hồi đánh giá chất lượng câu trả lời của bạn!'));
+        });
+        msgWrap.querySelectorAll('.feedback-report-btn').forEach(btn => {
+          btn.addEventListener('click', () => showToast('Đã gửi báo cáo kiểm tra trích dẫn RAG về hệ thống!', 'warn'));
+        });
+      }
+
+      // Initialize welcome message in Socratic stream
+      appendSocraticMessage('ai', socraticDemoResponses.welcome.content, socraticDemoResponses.welcome.badge);
+
+      // Preset buttons
+      document.querySelectorAll('.socratic-preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const key = btn.getAttribute('data-preset');
+          const preset = socraticDemoResponses[key];
+          if (!preset) return;
+          appendSocraticMessage('user', `Kích hoạt kịch bản kiểm thử: ${btn.textContent.trim()}`);
+          setTimeout(() => {
+            appendSocraticMessage('ai', preset.content, preset.badge);
+          }, 220);
+        });
+      });
+
+      // Mode pills
+      document.querySelectorAll('.socratic-mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.socraticMode = btn.getAttribute('data-mode');
+          document.querySelectorAll('.socratic-mode-btn').forEach(b => {
+            b.className = 'socratic-mode-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition';
+          });
+          btn.className = 'socratic-mode-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-green-600 text-white shadow-sm transition';
+          document.getElementById('activeModeIndicator').textContent = `CHẾ ĐỘ: ${state.socraticMode.toUpperCase()}`;
+          showToast(`Đã chuyển Trợ lý Socratic sang chế độ: ${state.socraticMode}`);
+        });
+      });
+
+      // Topic history items in left sub-sidebar
+      document.querySelectorAll('.chat-topic-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const topic = btn.getAttribute('data-topic');
+          state.socraticTopic = topic;
+          document.getElementById('socraticTopicTitle').textContent = topic;
+          document.querySelectorAll('.chat-topic-btn').forEach(b => {
+            b.className = 'chat-topic-btn w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-50 flex items-center justify-between';
+          });
+          btn.className = 'chat-topic-btn w-full text-left px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-900 flex items-center justify-between';
+          appendSocraticMessage('ai', `Đã chuyển ngữ cảnh RAG sang chủ đề <strong>${topic}</strong>. Bạn muốn thảo luận khía cạnh nào của bài học này?`, `CHỦ ĐỀ: ${topic.toUpperCase()}`);
+        });
+      });
+
+      document.getElementById('newChatSessionBtn').addEventListener('click', () => {
+        document.getElementById('socraticChatStream').innerHTML = '';
+        appendSocraticMessage('ai', socraticDemoResponses.welcome.content, 'PHIÊN HỘI THOẠI MỚI');
+        showToast('Đã tạo cuộc hội thoại Socratic mới!');
+      });
+
+      document.getElementById('attachFileSimulateBtn').addEventListener('click', () => {
+        showToast('Đã đính kèm tệp ngữ cảnh bài tập (docker-compose.yml) vào phiên hỏi đáp!');
+      });
+
+      document.getElementById('socraticChatForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = document.getElementById('socraticChatInput');
+        const text = input.value.trim();
+        if (!text) return;
+        input.value = '';
+        appendSocraticMessage('user', text);
+        setTimeout(() => {
+          appendSocraticMessage(
+            'ai',
+            `Ở chế độ <strong>${state.socraticMode}</strong> cho chủ đề <em>${state.socraticTopic}</em>: Câu hỏi của bạn chạm đúng trọng tâm! Trước khi mình tổng hợp công thức cuối cùng, theo bạn yếu tố nào quyết định chi phí tính toán lớn nhất trong tình huống này?`,
+            `SOCRATIC • ${state.socraticMode.toUpperCase()}`
+          );
+        }, 250);
+      });
+
+      // ==========================================
+      // 7. LEADERBOARD PAGE (VIEW 3)
+      // ==========================================
+      function renderLeaderboard() {
+        const listEl = document.getElementById('leaderboardList');
+        const isToday = state.leaderboardTab === 'today';
+
+        const userName = state.userProfile ? `${state.userProfile.name} (Bạn)` : 'Bạn (Học viên)';
+        const userInitials = state.userProfile ? state.userProfile.initials : 'BẠN';
+        const userScore = isToday ? state.xp : state.xp + 420;
+
+        const combined = [
+          ...baseLeaderboard.map(item => ({
+            name: item.name,
+            initials: item.initials,
+            xp: isToday ? item.xpToday : item.xpAll,
+            color: item.color,
+            isCurrentUser: false
+          })),
+          {
+            name: userName,
+            initials: userInitials,
+            xp: userScore,
+            color: 'bg-orange-500',
+            isCurrentUser: true
+          }
+        ].sort((a, b) => b.xp - a.xp);
+
+        listEl.innerHTML = combined.map((entry, idx) => {
+          const rank = idx + 1;
+          let medal = '';
+          if (rank === 1) medal = '🥇';
+          else if (rank === 2) medal = '🥈';
+          else if (rank === 3) medal = '🥉';
+
+          const rowHighlight = entry.isCurrentUser
+            ? 'bg-orange-50 border-2 border-orange-300 shadow-sm'
+            : 'bg-slate-50/70 border border-slate-200/80 hover:bg-slate-100/70';
+
+          return `
+            <div class="flex items-center justify-between px-4 py-3 rounded-2xl transition ${rowHighlight}">
+              <div class="flex items-center gap-3.5">
+                <div class="w-7 text-center font-extrabold text-sm ${rank <= 3 ? 'text-amber-600' : 'text-slate-500'}">
+                  ${rank}
+                </div>
+                <div class="w-10 h-10 rounded-full ${entry.color} text-white font-extrabold text-xs flex items-center justify-center shadow-sm">
+                  ${entry.initials}
+                </div>
+                <div>
+                  <div class="font-extrabold text-sm text-slate-900 flex items-center gap-1.5">
+                    <span>${entry.name}</span>
+                    ${medal ? `<span class="text-base">${medal}</span>` : ''}
+                  </div>
+                  <div class="text-[11px] font-semibold text-slate-400">AI20K Cohort 2</div>
+                </div>
+              </div>
+              <div class="font-extrabold text-sm ${entry.isCurrentUser ? 'text-orange-700' : 'text-green-700'}">
+                ${entry.xp} XP
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      document.querySelectorAll('.lb-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.leaderboardTab = btn.getAttribute('data-lb-tab');
+          document.querySelectorAll('.lb-tab-btn').forEach(b => {
+            b.className = 'lb-tab-btn px-4 py-2 rounded-xl text-xs font-extrabold text-slate-600 hover:text-slate-900 transition';
+          });
+          btn.className = 'lb-tab-btn px-4 py-2 rounded-xl text-xs font-extrabold bg-white text-green-700 shadow-sm transition';
+          renderLeaderboard();
+        });
+      });
+
+      // ==========================================
+      // 8. AUTH PORTAL MODAL (CÁ NHÂN)
+      // ==========================================
+      let isLoginMode = false;
+      function openAuthModal(loginMode = false) {
+        isLoginMode = loginMode;
+        updateAuthModalModeUI();
+        const modal = document.getElementById('authPortalModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+
+      function closeAuthModal() {
+        const modal = document.getElementById('authPortalModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+
+      function updateAuthModalModeUI() {
+        document.getElementById('authModalTitle').textContent = isLoginMode ? 'Đăng nhập học viên' : 'Đăng ký tài khoản';
+        document.getElementById('authSubmitBtn').textContent = isLoginMode ? 'ĐĂNG NHẬP ->' : 'ĐĂNG KÝ ->';
+        document.getElementById('toggleAuthModeBtn').innerHTML = isLoginMode
+          ? 'Chưa có tài khoản? <span class="text-green-600 underline font-extrabold">ĐĂNG KÝ NGAY</span>'
+          : 'Đã có tài khoản? <span class="text-green-600 underline font-extrabold">ĐĂNG NHẬP NGAY</span>';
+      }
+
+      document.getElementById('toggleAuthModeBtn').addEventListener('click', () => {
+        isLoginMode = !isLoginMode;
+        updateAuthModalModeUI();
+      });
+
+      document.getElementById('closeAuthModalBtn').addEventListener('click', closeAuthModal);
+      document.getElementById('sidebarCreateProfileBtn').addEventListener('click', () => openAuthModal(false));
+      document.getElementById('sidebarLoginBtn').addEventListener('click', () => openAuthModal(true));
+
+      function completeUserLogin(fullName, studentId) {
+        const parts = fullName.trim().split(/\s+/);
+        const initials = parts.length >= 2
+          ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+          : fullName.slice(0, 2).toUpperCase();
+
+        state.userProfile = { name: fullName, studentId, initials };
+        if (state.streak === 0) state.streak = 3;
+        if (state.xp === 0) state.xp = 120;
+
+        document.getElementById('accountCalloutCard').classList.add('hidden');
+        document.getElementById('loggedInProfileCard').classList.remove('hidden');
+        document.getElementById('profileAvatarInitials').textContent = initials;
+        document.getElementById('profileStudentName').textContent = fullName;
+        document.getElementById('profileStudentId').textContent = `MSSV: ${studentId.toUpperCase()}`;
+
+        updateGlobalStatsUI();
+        renderLeaderboard();
+        closeAuthModal();
+        showToast(`Chào mừng ${fullName} (${studentId.toUpperCase()})! Đã đồng bộ hồ sơ học tập.`);
+      }
+
+      document.getElementById('authPortalForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('authFullNameInput').value.trim();
+        const mssv = document.getElementById('authStudentIdInput').value.trim();
+        if (!name || !mssv) return;
+        completeUserLogin(name, mssv);
+      });
+
+      document.getElementById('bypassLoginBtn').addEventListener('click', () => {
+        completeUserLogin('Hoàng Blue (Demo)', 'SE190888');
+      });
+
+      document.getElementById('logoutProfileBtn').addEventListener('click', () => {
+        state.userProfile = null;
+        document.getElementById('loggedInProfileCard').classList.add('hidden');
+        document.getElementById('accountCalloutCard').classList.remove('hidden');
+        renderLeaderboard();
+        showToast('Đã đăng xuất khỏi Sapia AI Portal.');
+      });
+
+      // ==========================================
+      // 9. NAVIGATION & TOP CONTROLS
+      // ==========================================
+      function switchMainTab(tabKey) {
+        if (tabKey === 'profile') {
+          openAuthModal(false);
+          return;
+        }
+        state.activeNav = tabKey;
+
+        document.getElementById('view-learn').classList.toggle('hidden', tabKey !== 'learn');
+        document.getElementById('view-guidebook').classList.add('hidden');
+        document.getElementById('view-tutor').classList.toggle('hidden', tabKey !== 'tutor');
+        document.getElementById('view-leaderboard').classList.toggle('hidden', tabKey !== 'leaderboard');
+
+        document.getElementById('socraticSubSidebar').classList.toggle('hidden', tabKey !== 'tutor');
+
+        document.querySelectorAll('.nav-item').forEach(btn => {
+          const itemKey = btn.getAttribute('data-nav');
+          if (itemKey === tabKey) {
+            btn.className = 'nav-item flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm transition-all whitespace-nowrap bg-green-50 text-green-700 border border-green-200 shadow-sm';
+          } else {
+            btn.className = 'nav-item flex items-center gap-3 px-4 py-3 rounded-2xl font-bold text-sm text-slate-600 hover:bg-slate-100 transition-all whitespace-nowrap border border-transparent';
+          }
+        });
+
+        if (tabKey === 'leaderboard') {
+          renderLeaderboard();
+        }
+      }
+
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.addEventListener('click', () => {
+          switchMainTab(btn.getAttribute('data-nav'));
+        });
+      });
+
+      document.getElementById('brandLogoBtn').addEventListener('click', () => {
+        switchMainTab('learn');
+      });
+
+      // DEV MODE Toggle
+      document.getElementById('devModeToggleBtn').addEventListener('click', () => {
+        state.devMode = !state.devMode;
+        const btn = document.getElementById('devModeToggleBtn');
+        if (state.devMode) {
+          btn.textContent = 'DEV MODE: ON';
+          btn.className = 'px-3.5 py-1.5 rounded-xl text-xs font-extrabold tracking-wide border transition-all bg-green-600 text-white border-green-700 shadow-sm';
+          showToast('Đã bật DEV MODE: Mở khóa toàn bộ 7 Ngày học và tất cả các Node bài tập!');
+        } else {
+          btn.textContent = 'DEV MODE: OFF';
+          btn.className = 'px-3.5 py-1.5 rounded-xl text-xs font-extrabold tracking-wide border transition-all bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200';
+          showToast('Đã tắt DEV MODE: Quay về chế độ mở khóa tuần tự.', 'warn');
+        }
+        renderRoadmap();
+      });
+
+      // Collapse Week 1 Toggle
+      document.getElementById('collapseWeekBtn').addEventListener('click', () => {
+        state.weekCollapsed = !state.weekCollapsed;
+        document.getElementById('collapseWeekBtn').textContent = state.weekCollapsed ? 'MỞ RỘNG' : 'THU GỌN';
+        renderRoadmap();
+      });
+
+      // Waitlist Form
+      document.getElementById('waitlistForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const emailInput = document.getElementById('waitlistEmailInput');
+        if (!emailInput.value.trim()) return;
+        emailInput.value = '';
+        document.getElementById('waitlistSuccessMsg').classList.remove('hidden');
+        showToast('Đã thêm email của bạn vào danh sách ưu tiên Lộ trình AI Cá nhân hóa!');
+      });
+
+      // Initial Render
+      updateGlobalStatsUI();
+      renderRoadmap();
+      renderLeaderboard();
+    })();
+  </script>
+</body>
+</html>
